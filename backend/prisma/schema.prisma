@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+  schemas = ["livepoll"]
+}
+
+model Poll {
+  id        String      @id @default(uuid())
+  question  String
+  duration  Int
+  startTime DateTime
+  endedAt   DateTime?
+
+  status    PollStatus
+
+  options   Option[]
+  votes     Vote[]
+  messages Message[]
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@schema("livepoll")
+}
+
+model Option {
+  id     String @id @default(uuid())
+  text   String
+
+  pollId String
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  votes  Vote[]
+
+  createdAt DateTime @default(now())
+
+  @@schema("livepoll")
+}
+
+model Vote {
+  id        String @id @default(uuid())
+
+  pollId    String
+  optionId  String
+
+  sessionId String
+  name      String
+
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option Option @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([pollId, sessionId])
+
+  @@schema("livepoll")
+}
+
+model StudentSession {
+  id        String @id @default(uuid())
+
+  sessionId String @unique
+  name      String
+
+  socketId  String?
+  active    Boolean @default(true)
+
+  joinedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("livepoll")
+}
+
+model Message {
+  id        String @id @default(uuid())
+
+  senderName String
+  senderRole Role
+
+  message   String
+
+  pollId    String?
+  poll      Poll? @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@schema("livepoll")
+}
+
+enum PollStatus {
+  ACTIVE
+  COMPLETED
+
+  @@schema("livepoll")
+}
+
+enum Role {
+  TEACHER
+  STUDENT
+
+  @@schema("livepoll")
+}
