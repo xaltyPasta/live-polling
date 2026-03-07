@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+
 import { useSocket } from "../hooks/socket"
 
 import PageContainer from "../components/layout/PageContainer"
@@ -7,7 +9,12 @@ import PollOption from "../components/poll/PollOption"
 import PollTimer from "../components/poll/PollTimer"
 
 import type { Poll } from "../types/poll.types"
-import { useNavigate } from "react-router-dom"
+
+interface PollStatePayload {
+  poll: Poll
+  results: any[]
+  remainingTime: number
+}
 
 function StudentVotePage() {
   const socket = useSocket()
@@ -16,49 +23,86 @@ function StudentVotePage() {
   const [poll, setPoll] = useState<Poll | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
 
-  useEffect(() => {
-    socket.on("poll:state", (data: Poll) => {
-      setPoll(data)
+  const handlePollState = (payload: PollStatePayload) => {
+    console.log("poll received", payload)
+
+    if (!payload?.poll) return
+
+    setPoll({
+      ...payload.poll,
+      startTime: new Date(payload.poll.startTime).getTime()
     })
 
-    socket.on("student:removed", () => {
-      navigate("/kicked")
-    })
+    setSelected(null)
+  }
+
+  const handleStudentRemoved = () => {
+    navigate("/kicked")
+  }
+
+  useEffect(() => {
+    if (!socket) return
+
+    const onConnect = () => {
+      console.log("socket connected", socket.id)
+
+      socket.emit("student:join", {
+        name: sessionStorage.getItem("username"),
+        sessionId: sessionStorage.getItem("sessionId")
+      })
+    }
+
+    socket.on("connect", onConnect)
+
+    socket.on("poll:state", handlePollState)
+    socket.on("poll:created", handlePollState)
+    socket.on("student:removed", handleStudentRemoved)
 
     return () => {
-      socket.off("poll:state")
-      socket.off("student:removed")
+      socket.off("connect", onConnect)
+      socket.off("poll:state", handlePollState)
+      socket.off("poll:created", handlePollState)
+      socket.off("student:removed", handleStudentRemoved)
     }
+
   }, [socket])
 
   const submitVote = () => {
-    if (!selected) return
+    if (!selected || !poll) return
 
-    socket.emit("student:submit_vote", {
+    socket?.emit("student:submit_vote", {
+      pollId: poll.id,
       optionId: selected,
+      sessionId: sessionStorage.getItem("sessionId"),
+      name: sessionStorage.getItem("username")
     })
 
     navigate("/student/result")
   }
 
-  if (!poll) return null
+  if (!poll) {
+    return (
+      <PageContainer maxWidth={640}>
+        <div style={{ textAlign: "center" }}>
+          Loading poll...
+        </div>
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer maxWidth={640}>
       <PollCard question={poll.question}>
         <div style={{ marginBottom: "16px" }}>
-          <PollTimer
-            startTime={poll.startTime}
-            duration={poll.duration}
-          />
+          <PollTimer startTime={poll.startTime} duration={poll.duration} />
         </div>
 
-        {poll.options.map((o) => (
+        {poll.options.map((option) => (
           <PollOption
-            key={o.id}
-            text={o.text}
-            selected={selected === o.id}
-            onClick={() => setSelected(o.id)}
+            key={option.id}
+            text={option.text}
+            selected={selected === option.id}
+            onClick={() => setSelected(option.id)}
           />
         ))}
 
@@ -70,11 +114,12 @@ function StudentVotePage() {
             border: "none",
             padding: "10px 24px",
             borderRadius: "20px",
-            color: "white",
+            color: "white"
           }}
         >
           Submit
         </button>
+
       </PollCard>
     </PageContainer>
   )

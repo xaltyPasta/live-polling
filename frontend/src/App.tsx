@@ -7,7 +7,7 @@ import StudentWaitingPage from "./pages/StudentWaitingPage"
 import StudentVotePage from "./pages/StudentVotePage"
 import TeacherCreatePollPage from "./pages/TeacherCreatePollPage"
 import TeacherLiveResultsPage from "./pages/TeacherLiveResultsPage"
-import StudentResultPage from "./pages/StudentReesultPage"
+import StudentResultPage from "./pages/StudentResultPage"
 
 function App() {
   return (

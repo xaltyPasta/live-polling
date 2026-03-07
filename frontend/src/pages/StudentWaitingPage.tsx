@@ -3,29 +3,42 @@ import { useNavigate } from "react-router-dom"
 
 import PageContainer from "../components/layout/PageContainer"
 import PageHeader from "../components/common/PageHeader"
-
 import { useSocket } from "../hooks/socket"
+
+interface PollStatePayload {
+  poll: any | null
+}
 
 function StudentWaitingPage() {
   const socket = useSocket()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const username = sessionStorage.getItem("username")
+  const joinPoll = () => {
+    const name = sessionStorage.getItem("username")
+    const sessionId = sessionStorage.getItem("sessionId")
 
-    socket.emit("student:join", { username })
+    socket.emit("student:join", { name, sessionId })
+  }
 
-    socket.on("poll:created", () => {
+  const handlePollCreated = () => {
+    navigate("/student/vote")
+  }
+
+  const handlePollState = (payload: PollStatePayload) => {
+    if (payload?.poll) {
       navigate("/student/vote")
-    })
+    }
+  }
 
-    socket.on("student:removed", () => {
-      navigate("/kicked")
-    })
+  useEffect(() => {
+    joinPoll()
+
+    socket.on("poll:created", handlePollCreated)
+    socket.on("poll:state", handlePollState)
 
     return () => {
-      socket.off("poll:created")
-      socket.off("student:removed")
+      socket.off("poll:created", handlePollCreated)
+      socket.off("poll:state", handlePollState)
     }
   }, [socket, navigate])
 
@@ -39,7 +52,7 @@ function StudentWaitingPage() {
       <div
         style={{
           marginTop: "40px",
-          textAlign: "center",
+          textAlign: "center"
         }}
       >
         <div
@@ -50,7 +63,7 @@ function StudentWaitingPage() {
             borderTop: "5px solid var(--primary-purple)",
             borderRadius: "50%",
             margin: "auto",
-            animation: "spin 1s linear infinite",
+            animation: "spin 1s linear infinite"
           }}
         />
       </div>

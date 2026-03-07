@@ -3,35 +3,67 @@ import { useEffect, useState } from "react"
 import PageContainer from "../components/layout/PageContainer"
 import PollCard from "../components/poll/PollCard"
 import PollResults from "../components/poll/PollResults"
+import PollTimer from "../components/poll/PollTimer"
 import RightSidebar from "../components/layout/RightSidebar"
 
 import { useSocket } from "../hooks/socket"
+
 import type { Poll } from "../types/poll.types"
 import type { Participant } from "../types/session.types"
+
+interface PollEndResult {
+  optionId: string
+  text: string
+  votes: number
+  percentage: number
+  isCorrect: boolean
+}
 
 function TeacherLiveResultsPage() {
   const socket = useSocket()
 
   const [poll, setPoll] = useState<Poll | null>(null)
   const [participants, setParticipants] = useState<Participant[]>([])
+  const [results, setResults] = useState<PollEndResult[]>([])
+  const [ended, setEnded] = useState(false)
+
+  const normalizePoll = (incoming: any): Poll => ({
+    ...incoming,
+    startTime: new Date(incoming.startTime).getTime()
+  })
+
+  const handlePollCreated = (payload: any) => {
+    const incomingPoll = payload.poll ?? payload
+    setPoll(normalizePoll(incomingPoll))
+    setEnded(false)
+  }
+
+  const handlePollUpdate = (payload: any) => {
+    const incomingPoll = payload.poll ?? payload
+    setPoll(normalizePoll(incomingPoll))
+  }
+
+  const handlePollEnded = (payload: any) => {
+    setPoll(normalizePoll(payload.poll))
+    setResults(payload.results)
+    setEnded(true)
+  }
+
+  const handleParticipantsUpdate = (data: Participant[]) => {
+    setParticipants(data)
+  }
 
   useEffect(() => {
-    socket.on("poll:created", (data: Poll) => {
-      setPoll(data)
-    })
-
-    socket.on("poll:update", (data: Poll) => {
-      setPoll(data)
-    })
-
-    socket.on("participants:update", (data: Participant[]) => {
-      setParticipants(data)
-    })
+    socket.on("poll:created", handlePollCreated)
+    socket.on("poll:update", handlePollUpdate)
+    socket.on("poll:ended", handlePollEnded)
+    socket.on("participants:update", handleParticipantsUpdate)
 
     return () => {
-      socket.off("poll:created")
-      socket.off("poll:update")
-      socket.off("participants:update")
+      socket.off("poll:created", handlePollCreated)
+      socket.off("poll:update", handlePollUpdate)
+      socket.off("poll:ended", handlePollEnded)
+      socket.off("participants:update", handleParticipantsUpdate)
     }
   }, [socket])
 
@@ -39,14 +71,50 @@ function TeacherLiveResultsPage() {
     socket.emit("teacher:remove_student", { sessionId })
   }
 
-  if (!poll) return null
+  if (!poll) {
+    return (
+      <PageContainer maxWidth={700}>
+        <div style={{ textAlign: "center" }}>
+          Waiting for poll data...
+        </div>
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer maxWidth={1100}>
       <div className="row g-4">
+
         <div className="col-md-8">
           <PollCard question={poll.question}>
-            <PollResults options={poll.options} />
+
+            {!ended && (
+              <PollTimer
+                startTime={poll.startTime}
+                duration={poll.duration}
+              />
+            )}
+
+            {!ended && (
+              <PollResults options={poll.options} />
+            )}
+
+            {ended && (
+              <div>
+                {results.map((r) => (
+                  <div key={r.optionId} style={{ marginBottom: 12 }}>
+                    <strong>
+                      {r.text} {r.isCorrect ? "✓" : ""}
+                    </strong>
+
+                    <div>
+                      {r.votes} votes ({r.percentage}%)
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
           </PollCard>
         </div>
 
@@ -56,6 +124,7 @@ function TeacherLiveResultsPage() {
             onKick={kickStudent}
           />
         </div>
+
       </div>
     </PageContainer>
   )
