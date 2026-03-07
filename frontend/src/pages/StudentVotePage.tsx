@@ -77,7 +77,9 @@ function StudentVotePage() {
       name: sessionStorage.getItem("username")
     })
 
-    navigate("/student/result")
+    socket.once("vote:confirmed", () => {
+      navigate("/student/result")
+    })
   }
 
   if (!poll) {

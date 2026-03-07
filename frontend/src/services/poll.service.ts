@@ -1,7 +1,7 @@
 import axios from "axios"
 import type { Poll } from "../types/poll.types"
 
-const API_URL = import.meta.env.BACKEND_URL
+const API_URL = import.meta.env.VITE_BACKEND_URL
 
 export async function getPollHistory(): Promise<Poll[]> {
     const res = await axios.get(`${API_URL}/polls/history`)

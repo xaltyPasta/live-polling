@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 import PageContainer from "../components/layout/PageContainer"
 import PollCard from "../components/poll/PollCard"
 import PollResults from "../components/poll/PollResults"
 
 import { useSocket } from "../hooks/socket"
-import type { Poll } from "../types/poll.types"
-import { useNavigate } from "react-router-dom"
+import type { Poll, PollOption } from "../types/poll.types"
 
 function StudentResultPage() {
     const socket = useSocket()
@@ -15,26 +15,79 @@ function StudentResultPage() {
     const [poll, setPoll] = useState<Poll | null>(null)
 
     useEffect(() => {
-        socket.on("poll:update", (data: Poll) => {
-            setPoll(data)
-        })
+        if (!socket) return
 
-        socket.on("poll:ended", (data: Poll) => {
-            setPoll(data)
-        })
+        // request latest poll state when page loads
+        const requestState = () => {
+            socket.emit("student:join", {
+                name: sessionStorage.getItem("username"),
+                sessionId: sessionStorage.getItem("sessionId"),
+            })
+        }
 
-        socket.on("student:removed", () => {
+        if (socket.connected) requestState()
+        else socket.once("connect", requestState)
+
+        const handlePollUpdate = (payload: any) => {
+            setPoll((prev) => {
+                if (!prev) {
+                    return {
+                        id: payload.pollId,
+                        question: "",
+                        options: payload.results as PollOption[],
+                        duration: 0,
+                        startTime: Date.now()
+                    } as Poll
+                }
+
+                return {
+                    ...prev,
+                    options: payload.results as PollOption[]
+                }
+            })
+        }
+
+        const handlePollEnded = (payload: any) => {
+            if (payload?.poll) {
+                setPoll({
+                    ...payload.poll,
+                    options: payload.results as PollOption[]
+                })
+            }
+        }
+
+        const handlePollState = (payload: any) => {
+            if (payload?.poll) {
+                setPoll(payload.poll)
+            }
+        }
+
+        const handleStudentRemoved = () => {
             navigate("/kicked")
-        })
+        }
+
+        socket.on("poll:update", handlePollUpdate)
+        socket.on("poll:ended", handlePollEnded)
+        socket.on("poll:state", handlePollState)
+        socket.on("student:removed", handleStudentRemoved)
 
         return () => {
-            socket.off("poll:update")
-            socket.off("poll:ended")
-            socket.off("student:removed")
+            socket.off("poll:update", handlePollUpdate)
+            socket.off("poll:ended", handlePollEnded)
+            socket.off("poll:state", handlePollState)
+            socket.off("student:removed", handleStudentRemoved)
         }
-    }, [socket])
+    }, [socket, navigate])
 
-    if (!poll) return null
+    if (!poll) {
+        return (
+            <PageContainer maxWidth={640}>
+                <div style={{ textAlign: "center" }}>
+                    Waiting for results...
+                </div>
+            </PageContainer>
+        )
+    }
 
     return (
         <PageContainer maxWidth={640}>

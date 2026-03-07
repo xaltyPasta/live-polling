@@ -20,6 +20,7 @@ interface PollEndResult {
 }
 
 function TeacherLiveResultsPage() {
+
   const socket = useSocket()
 
   const [poll, setPoll] = useState<Poll | null>(null)
@@ -33,20 +34,73 @@ function TeacherLiveResultsPage() {
   })
 
   const handlePollCreated = (payload: any) => {
+
     const incomingPoll = payload.poll ?? payload
+
     setPoll(normalizePoll(incomingPoll))
     setEnded(false)
+
+    if (payload?.results) {
+      setResults(payload.results)
+    }
+
   }
 
   const handlePollUpdate = (payload: any) => {
+
+    if (payload?.results) {
+
+      setPoll((prev) => {
+
+        if (!prev) return prev
+
+        return {
+          ...prev,
+          options: payload.results
+        }
+
+      })
+
+      return
+    }
+
     const incomingPoll = payload.poll ?? payload
+
     setPoll(normalizePoll(incomingPoll))
+
   }
 
   const handlePollEnded = (payload: any) => {
-    setPoll(normalizePoll(payload.poll))
-    setResults(payload.results)
+
+    if (payload?.poll) {
+      setPoll(normalizePoll(payload.poll))
+    }
+
+    if (payload?.results) {
+      setResults(payload.results)
+    }
+
     setEnded(true)
+
+  }
+
+  // Restore poll state on refresh
+  const handlePollState = (payload: any) => {
+
+    if (!payload?.poll) return
+
+    const restoredPoll = normalizePoll(payload.poll)
+
+    if (payload?.results) {
+      restoredPoll.options = payload.results
+    }
+
+    setPoll(restoredPoll)
+
+    if (payload?.participants) {
+      setParticipants(payload.participants)
+    }
+
   }
 
   const handleParticipantsUpdate = (data: Participant[]) => {
@@ -54,24 +108,47 @@ function TeacherLiveResultsPage() {
   }
 
   useEffect(() => {
+
+    if (!socket) return
+
+    const requestState = () => {
+      socket.emit("teacher:request_state")
+    }
+
+    if (socket.connected) {
+      requestState()
+    } else {
+      socket.once("connect", requestState)
+    }
+
+    socket.on("poll:state", handlePollState)
     socket.on("poll:created", handlePollCreated)
     socket.on("poll:update", handlePollUpdate)
     socket.on("poll:ended", handlePollEnded)
     socket.on("participants:update", handleParticipantsUpdate)
 
     return () => {
+
+      socket.off("poll:state", handlePollState)
       socket.off("poll:created", handlePollCreated)
       socket.off("poll:update", handlePollUpdate)
       socket.off("poll:ended", handlePollEnded)
       socket.off("participants:update", handleParticipantsUpdate)
+
     }
+
   }, [socket])
 
   const kickStudent = (sessionId: string) => {
+
+    if (!socket) return
+
     socket.emit("teacher:remove_student", { sessionId })
+
   }
 
   if (!poll) {
+
     return (
       <PageContainer maxWidth={700}>
         <div style={{ textAlign: "center" }}>
@@ -79,13 +156,17 @@ function TeacherLiveResultsPage() {
         </div>
       </PageContainer>
     )
+
   }
 
   return (
+
     <PageContainer maxWidth={1100}>
+
       <div className="row g-4">
 
         <div className="col-md-8">
+
           <PollCard question={poll.question}>
 
             {!ended && (
@@ -100,9 +181,16 @@ function TeacherLiveResultsPage() {
             )}
 
             {ended && (
+
               <div>
+
                 {results.map((r) => (
-                  <div key={r.optionId} style={{ marginBottom: 12 }}>
+
+                  <div
+                    key={r.optionId}
+                    style={{ marginBottom: 12 }}
+                  >
+
                     <strong>
                       {r.text} {r.isCorrect ? "✓" : ""}
                     </strong>
@@ -110,24 +198,34 @@ function TeacherLiveResultsPage() {
                     <div>
                       {r.votes} votes ({r.percentage}%)
                     </div>
+
                   </div>
+
                 ))}
+
               </div>
+
             )}
 
           </PollCard>
+
         </div>
 
         <div className="col-md-4">
+
           <RightSidebar
             participants={participants}
             onKick={kickStudent}
           />
+
         </div>
 
       </div>
+
     </PageContainer>
+
   )
+
 }
 
 export default TeacherLiveResultsPage
