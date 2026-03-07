@@ -1,32 +1,58 @@
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import PageContainer from "../components/layout/PageContainer"
 import PageHeader from "../components/common/PageHeader"
 import CreatePollForm from "../components/teacher/CreatePollForm"
-import { useNavigate } from "react-router-dom"
+import GradientButton from "../components/common/GradientButton"
+import { useSocket } from "../hooks/socket"
 
 function TeacherCreatePollPage() {
+    const socket = useSocket()
     const navigate = useNavigate()
-    
-    return (
-        <PageContainer maxWidth={720}>
-            <PageHeader
-                title="Let's Get Started"
-                subtitle="Create and manage live polls"
-            />
 
-            <CreatePollForm />
-            <button
-                onClick={() => navigate("/history")}
+    const [formData, setFormData] = useState<any>(null)
+
+    const handleSubmit = () => {
+        if (!formData) return
+
+        socket.emit("teacher:create_poll", formData)
+        navigate("/teacher/live")
+    }
+
+    return (
+        <>
+            <PageContainer maxWidth={1000}>
+
+                <PageHeader
+                    title="Let's Get Started"
+                    subtitle="You'll have the ability to create and manage polls, ask questions, and monitor your students' responses in real-time."
+                />
+
+                <CreatePollForm onChange={setFormData} />
+
+            </PageContainer>
+
+            {/* bottom action bar */}
+            <div
                 style={{
-                    border: "none",
-                    background: "transparent",
-                    color: "var(--primary-purple)",
-                    marginBottom: "20px",
-                    cursor: "pointer",
+                    position: "fixed",
+                    bottom: 0,
+                    left: 0,
+                    width: "100%",
+                    borderTop: "1px solid #B6B6B6",
+                    background: "white",
+                    padding: "20px 40px",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    zIndex: 100,
                 }}
             >
-                View Poll History
-            </button>
-        </PageContainer>
+                <GradientButton
+                    label="Ask Question"
+                    onClick={handleSubmit}
+                />
+            </div>
+        </>
     )
 }
 

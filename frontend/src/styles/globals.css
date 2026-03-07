@@ -1,0 +1,212 @@
+:root {
+    --gradient-primary: linear-gradient(99.18deg, #8F64E1 -46.89%, #1D68BD 223.45%);
+    --badge-gradient: linear-gradient(90deg, #7565D9 0%, #4D0ACD 100%);
+    --text-dark: #373737;
+    --text-muted: #6E6E6E;
+}
+
+html,
+body,
+#root {
+    min-height: 100vh;
+}
+
+body {
+    margin: 0;
+    background: var(--background-light);
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #FFFFFF;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.page-header-title {
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.page-header-subtitle {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 700px;
+    margin: auto;
+}
+
+.role-card {
+    width: 387px;
+    height: 143px;
+    border-radius: 10px;
+    border: 1px solid #D9D9D9;
+    padding: 15px 17px 15px 25px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.role-card:hover {
+    border-color: #7565D9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.role-card.selected {
+    border: 2px solid #7565D9;
+}
+
+.gradient-button {
+    width: 234px;
+    height: 58px;
+    border-radius: 34px;
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.gradient-button:hover {
+    transform: translateY(-1px);
+}
+
+.gradient-button:disabled {
+    opacity: 0.6;
+}
+
+
+/* teacher create poll */
+.question-box {
+    width: 865px;
+    height: 174px;
+    background: #F2F2F2;
+    border: none;
+    border-radius: 2px;
+    padding: 20px;
+    font-size: 18px;
+}
+
+.option-input {
+    width: 507px;
+    height: 60px;
+    background: #F2F2F2;
+    border: none;
+    border-radius: 2px;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+.duration-dropdown {
+    background: #F1F1F1;
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: 18px;
+    border: none;
+}
+
+.poll-form {
+    width: 865px;
+    margin-top: 40px;
+}
+
+.poll-question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.poll-question-label {
+    font-family: "Sora", sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 15px;
+    margin-top: 5px;
+}
+
+.options-section {
+    display: flex;
+    margin-top: 40px;
+}
+
+.options-left {
+    width: 507px;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.option-number {
+    width: 22px;
+    height: 22px;
+    background: #8F64E1;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    font-size: 12px;
+}
+
+
+.correct-column {
+    margin-left: 60px;
+}
+
+.correct-title {
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.correct-toggle {
+    display: flex;
+    gap: 17px;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.toggle-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #8F64E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-dot {
+    width: 14px;
+    height: 14px;
+    background: #8F64E1;
+    border-radius: 50%;
+}
+
+.add-option-btn {
+    width: 169px;
+    height: 45px;
+    border-radius: 11px;
+    border: 1px solid #7451B6;
+    background: transparent;
+    color: #7C57C2;
+    font-weight: 600;
+    margin-top: 20px;
+}

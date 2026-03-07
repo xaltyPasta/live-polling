@@ -150,7 +150,7 @@ function TeacherLiveResultsPage() {
   if (!poll) {
 
     return (
-      <PageContainer maxWidth={700}>
+      <PageContainer min-Width={700}>
         <div style={{ textAlign: "center" }}>
           Waiting for poll data...
         </div>
@@ -161,7 +161,7 @@ function TeacherLiveResultsPage() {
 
   return (
 
-    <PageContainer maxWidth={1100}>
+    <PageContainer min-Width={1100}>
 
       <div className="row g-4">
 

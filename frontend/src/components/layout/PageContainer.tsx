@@ -1,23 +1,22 @@
 interface PageContainerProps {
     children: React.ReactNode
+    maxWidth?: number
 }
 
-function PageContainer({ children }: PageContainerProps) {
+function PageContainer({ children, maxWidth = 980 }: PageContainerProps) {
     return (
         <div
             style={{
                 minHeight: "100vh",
-                background: "var(--background-light)",
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
-                padding: "20px",
+                padding: "40px 20px",
             }}
         >
             <div
                 style={{
                     width: "100%",
-                    maxWidth: "980px",
+                    maxWidth: `${maxWidth}px`,
                 }}
             >
                 {children}

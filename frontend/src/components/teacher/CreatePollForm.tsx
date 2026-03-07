@@ -1,12 +1,11 @@
-import { useState } from "react"
-import { useSocket } from "../../hooks/socket"
+import { useState, useEffect } from "react"
 import OptionEditor from "./OptionEditor"
-import GradientButton from "../common/GradientButton"
-import { useNavigate } from "react-router-dom"
 
-function CreatePollForm() {
-    const socket = useSocket()
-    const navigate = useNavigate()
+interface Props {
+    onChange: (data: any) => void
+}
+
+function CreatePollForm({ onChange }: Props) {
 
     const [question, setQuestion] = useState("")
     const [duration, setDuration] = useState(60)
@@ -23,10 +22,8 @@ function CreatePollForm() {
         setOptions([...options, ""])
     }
 
-    const createPoll = () => {
-        if (!question || correctIndex === null) return
-
-        socket.emit("teacher:create_poll", {
+    useEffect(() => {
+        onChange({
             question,
             duration,
             options: options.map((o, i) => ({
@@ -34,47 +31,67 @@ function CreatePollForm() {
                 correct: i === correctIndex,
             })),
         })
-
-        navigate("/teacher/live")
-    }
+    }, [question, duration, options, correctIndex])
 
     return (
-        <div>
-            <div style={{ marginBottom: "20px" }}>
-                <label>Enter your question</label>
+        <div style={{ width: 865 }}>
 
-                <textarea
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        borderRadius: "8px",
-                        border: "1px solid #ddd",
-                        marginTop: "6px",
-                    }}
-                />
-            </div>
+            {/* Question header */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 12,
+                }}
+            >
+                <label style={{ fontWeight: 600, fontSize: 20 }}>
+                    Enter your question
+                </label>
 
-            <div style={{ marginBottom: "20px" }}>
-                <label>Duration (seconds)</label>
-
-                <input
-                    type="number"
+                <select
                     value={duration}
                     onChange={(e) => setDuration(Number(e.target.value))}
                     style={{
-                        width: "100%",
-                        padding: "10px",
-                        borderRadius: "8px",
-                        border: "1px solid #ddd",
-                        marginTop: "6px",
+                        width: 170,
+                        height: 43,
+                        background: "#F1F1F1",
+                        border: "none",
+                        borderRadius: 7,
+                        paddingLeft: 12,
+                        fontSize: 18,
                     }}
-                />
+                >
+                    <option value={30}>30 seconds</option>
+                    <option value={60}>60 seconds</option>
+                    <option value={90}>90 seconds</option>
+                </select>
             </div>
 
-            <div style={{ marginBottom: "16px" }}>
-                <label>Edit Options</label>
+            {/* Question textarea */}
+            <textarea
+                maxLength={100}
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                style={{
+                    width: 865,
+                    height: 174,
+                    background: "#F2F2F2",
+                    border: "none",
+                    borderRadius: 2,
+                    padding: 20,
+                    fontSize: 18,
+                    resize: "none",
+                }}
+            />
+
+            <div style={{ textAlign: "right", marginTop: 6 }}>
+                {question.length}/100
+            </div>
+
+            {/* Options */}
+            <div style={{ marginTop: 40, fontWeight: 600 }}>
+                Edit Options
             </div>
 
             {options.map((o, i) => (
@@ -88,21 +105,22 @@ function CreatePollForm() {
                 />
             ))}
 
-            <div style={{ marginBottom: "20px" }}>
-                <button
-                    onClick={addOption}
-                    style={{
-                        background: "transparent",
-                        border: "none",
-                        color: "var(--primary-purple)",
-                        cursor: "pointer",
-                    }}
-                >
-                    + Add option
-                </button>
-            </div>
+            <button
+                onClick={addOption}
+                style={{
+                    width: 169,
+                    height: 45,
+                    borderRadius: 11,
+                    border: "1px solid #7451B6",
+                    background: "transparent",
+                    color: "#7C57C2",
+                    fontWeight: 600,
+                    marginTop: 20,
+                }}
+            >
+                + Add More option
+            </button>
 
-            <GradientButton label="Ask Question" onClick={createPoll} />
         </div>
     )
 }
