@@ -94,7 +94,7 @@ export class PollController {
     static async createPoll(
         io: Server,
         question: string,
-        options: string[],
+        options: { text: string, isCorrect: boolean }[],
         duration: number
     ) {
 
