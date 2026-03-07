@@ -9,8 +9,9 @@ function CreatePollForm({ onChange }: Props) {
 
     const [question, setQuestion] = useState("")
     const [duration, setDuration] = useState(60)
+
     const [options, setOptions] = useState(["", ""])
-    const [correctIndex, setCorrectIndex] = useState<number | null>(null)
+    const [correctOptions, setCorrectOptions] = useState<boolean[]>([false, false])
 
     const updateOption = (index: number, value: string) => {
         const updated = [...options]
@@ -18,8 +19,25 @@ function CreatePollForm({ onChange }: Props) {
         setOptions(updated)
     }
 
+    const toggleCorrect = (index: number, value: boolean) => {
+        const updated = [...correctOptions]
+        updated[index] = value
+        setCorrectOptions(updated)
+    }
+
     const addOption = () => {
         setOptions([...options, ""])
+        setCorrectOptions([...correctOptions, false])
+    }
+
+    const deleteOption = (index: number) => {
+        if (options.length <= 2) return
+
+        const newOptions = options.filter((_, i) => i !== index)
+        const newCorrect = correctOptions.filter((_, i) => i !== index)
+
+        setOptions(newOptions)
+        setCorrectOptions(newCorrect)
     }
 
     useEffect(() => {
@@ -28,10 +46,10 @@ function CreatePollForm({ onChange }: Props) {
             duration,
             options: options.map((o, i) => ({
                 text: o,
-                correct: i === correctIndex,
+                correct: correctOptions[i] ?? false,
             })),
         })
-    }, [question, duration, options, correctIndex])
+    }, [question, duration, options, correctOptions])
 
     return (
         <div style={{ width: 865 }}>
@@ -90,8 +108,20 @@ function CreatePollForm({ onChange }: Props) {
             </div>
 
             {/* Options */}
-            <div style={{ marginTop: 40, fontWeight: 600 }}>
-                Edit Options
+            <div
+                style={{
+                    display: "flex",
+                    marginTop: 40,
+                    alignItems: "center"
+                }}
+            >
+                <div style={{ fontWeight: 600, width: 545 }}>
+                    Edit Options
+                </div>
+
+                <div style={{ fontWeight: 600 , marginLeft: 40}}>
+                    Is it Correct?
+                </div>
             </div>
 
             {options.map((o, i) => (
@@ -99,9 +129,10 @@ function CreatePollForm({ onChange }: Props) {
                     key={i}
                     value={o}
                     index={i}
-                    correctIndex={correctIndex}
+                    isCorrect={correctOptions[i]}
                     onChange={updateOption}
-                    onSelectCorrect={setCorrectIndex}
+                    onToggleCorrect={toggleCorrect}
+                    onDelete={deleteOption}
                 />
             ))}
 
@@ -110,12 +141,21 @@ function CreatePollForm({ onChange }: Props) {
                 style={{
                     width: 169,
                     height: 45,
-                    borderRadius: 11,
-                    border: "1px solid #7451B6",
-                    background: "transparent",
-                    color: "#7C57C2",
-                    fontWeight: 600,
+                    marginLeft: 40,
                     marginTop: 20,
+                    display: "flex",
+                    justifyContent: "start",
+                    alignItems: "left",
+                    gap: 10,
+                    padding: 10,
+                    border: "1px solid #7451B6",
+                    borderRadius: 11,
+                    background: "transparent",
+                    fontFamily: "Sora",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    color: "#7C57C2",
+                    cursor: "pointer"
                 }}
             >
                 + Add More option

@@ -21,16 +21,21 @@ function TeacherCreatePollPage() {
 
     return (
         <>
-            <PageContainer maxWidth={1000}>
+            <div style={{
+                paddingLeft: 123,
+                paddingTop: 81
+            }}>
+                <PageContainer align="start">
 
-                <PageHeader
-                    title="Let's Get Started"
-                    subtitle="You'll have the ability to create and manage polls, ask questions, and monitor your students' responses in real-time."
-                />
+                    <PageHeader 
+                        title="Let's Get Started"
+                        subtitle="You'll have the ability to create and manage polls, ask questions, and monitor your students' responses in real-time."
+                    />
 
-                <CreatePollForm onChange={setFormData} />
+                    <CreatePollForm onChange={setFormData} />
 
-            </PageContainer>
+                </PageContainer>
+            </div>
 
             {/* bottom action bar */}
             <div

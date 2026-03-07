@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import PageHeader from "../components/common/PageHeader"
 import RoleCard from "../components/common/RoleCard"
 import GradientButton from "../components/common/GradientButton"
-import PageContainer from "../components/layout/PageContainer"
+import PageContainer from '../components/layout/PageContainer';
 
 function LandingPage() {
     const [role, setRole] = useState<"student" | "teacher" | null>(null)
@@ -16,7 +16,7 @@ function LandingPage() {
     }
 
     return (
-        <PageContainer>
+        <PageContainer align="center">
 
             <PageHeader
                 title="Welcome to the Live Polling System"

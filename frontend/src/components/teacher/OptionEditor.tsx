@@ -1,20 +1,20 @@
 interface Props {
     value: string
     index: number
-    correctIndex: number | null
+    isCorrect: boolean
     onChange: (index: number, value: string) => void
-    onSelectCorrect: (index: number | null) => void
+    onToggleCorrect: (index: number, value: boolean) => void
+    onDelete: (index: number) => void
 }
 
 function OptionEditor({
     value,
     index,
-    correctIndex,
+    isCorrect,
     onChange,
-    onSelectCorrect,
+    onToggleCorrect,
+    onDelete
 }: Props) {
-
-    const isCorrect = correctIndex === index
 
     return (
         <div
@@ -25,11 +25,12 @@ function OptionEditor({
             }}
         >
 
+
             {/* option number */}
             <div
                 style={{
-                    width: 22,
-                    height: 22,
+                    width: 24,
+                    height: 24,
                     borderRadius: "50%",
                     background: "#8F64E1",
                     color: "white",
@@ -60,19 +61,28 @@ function OptionEditor({
                 }}
             />
 
+
+
             {/* Yes / No */}
             <div style={{ width: 139, display: "flex", gap: 17 }}>
 
+                {/* YES */}
                 <div
-                    onClick={() => onSelectCorrect(index)}
-                    style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}
+                    onClick={() => onToggleCorrect(index, true)}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        cursor: "pointer",
+                    }}
                 >
                     <div
                         style={{
                             width: 22,
                             height: 22,
                             borderRadius: "50%",
-                            border: "2px solid #8F64E1",
+                            background: isCorrect ? "#8F64E1" : "#D9D9D9",
+                            border: "1px solid #B4B4B4",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -81,10 +91,11 @@ function OptionEditor({
                         {isCorrect && (
                             <div
                                 style={{
-                                    width: 14,
-                                    height: 14,
+                                    width: 16,
+                                    height: 16,
                                     borderRadius: "50%",
-                                    background: "#8F64E1",
+                                    border: "1px solid white",
+                                    boxSizing: "border-box",
                                 }}
                             />
                         )}
@@ -93,26 +104,59 @@ function OptionEditor({
                     Yes
                 </div>
 
+                {/* NO */}
                 <div
-                    onClick={() => {
-                        if (isCorrect) onSelectCorrect(null)
+                    onClick={() => onToggleCorrect(index, false)}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        cursor: "pointer",
                     }}
-                    style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}
                 >
                     <div
                         style={{
                             width: 22,
                             height: 22,
                             borderRadius: "50%",
-                            background: "#D9D9D9",
+                            background: !isCorrect ? "#8F64E1" : "#D9D9D9",
                             border: "1px solid #B4B4B4",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                         }}
-                    />
+                    >
+                        {!isCorrect && (
+                            <div
+                                style={{
+                                    width: 16,
+                                    height: 16,
+                                    borderRadius: "50%",
+                                    border: "1px solid white",
+                                    boxSizing: "border-box",
+                                }}
+                            />
+                        )}
+                    </div>
 
                     No
                 </div>
 
             </div>
+            {/* Delete option */}
+            <button
+                onClick={() => onDelete(index)}
+                style={{
+                    marginLeft: 20,
+                    border: "none",
+                    background: "transparent",
+                    fontSize: 18,
+                    cursor: "pointer",
+                    color: "#888",
+                }}
+            >
+                ✕
+            </button>
 
         </div>
     )

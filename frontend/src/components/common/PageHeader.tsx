@@ -5,7 +5,7 @@ interface PageHeaderProps {
 
 function PageHeader({ title, subtitle }: PageHeaderProps) {
     return (
-        <div className="text-center mb-5">
+        <div className="text-left mb-5">
 
             <div
                 style={{
@@ -30,7 +30,7 @@ function PageHeader({ title, subtitle }: PageHeaderProps) {
             </h1>
 
             {subtitle && (
-                <p className="page-header-subtitle mt-3">
+                <p className="mt-3">
                     {subtitle}
                 </p>
             )}
