@@ -25,10 +25,13 @@ export function registerPollSocket(io: Server) {
                     socket.id
                 )
 
-                const state = await PollController.getPollState(
-                    sessionId
-                )
+                const state = await PollController.getPollState(sessionId)
 
+                console.log("student join", name, sessionId)
+
+                console.log("poll state returned:", state)
+
+                // send current poll state to student (late join support)
                 socket.emit("poll:state", {
                     poll: state.poll,
                     results: state.results,
@@ -63,7 +66,12 @@ export function registerPollSocket(io: Server) {
                     duration
                 )
 
-                io.emit("poll:created", poll)
+                const results = await PollController.getPollResults(poll.id)
+
+                io.emit("poll:created", {
+                    poll,
+                    results
+                })
 
             } catch (err: any) {
 
@@ -165,7 +173,7 @@ export function registerPollSocket(io: Server) {
         })
 
         // =========================
-        // Remove Student
+        // REMOVE STUDENT
         // =========================
 
         socket.on("teacher:remove_student", async ({ sessionId }) => {
@@ -219,9 +227,7 @@ export function registerPollSocket(io: Server) {
             console.log("Disconnected:", socket.id)
 
             try {
-
                 await SessionController.markInactive(socket.id)
-
             } catch { }
 
         })
