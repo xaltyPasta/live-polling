@@ -16,52 +16,56 @@ function LandingPage() {
     }
 
     return (
-        <PageContainer align="center">
+        <div style={{
+                paddingTop: 81
+            }}>
+            <PageContainer align="center">
 
-            <PageHeader
-                title="Welcome to the Live Polling System"
-                subtitle="Please select the role that best describes you to begin using the live polling system"
-            />
-
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "40px",
-                    marginTop: "40px",
-                    marginBottom: "60px",
-                    flexWrap: "wrap",
-                }}
-            >
-                <RoleCard
-                    title="I'm a Student"
-                    description="Submit answers and participate in live polls"
-                    selected={role === "student"}
-                    onClick={() => setRole("student")}
+                <PageHeader
+                    title="Welcome to the Live Polling System"
+                    subtitle="Please select the role that best describes you to begin using the live polling system"
                 />
 
-                <RoleCard
-                    title="I'm a Teacher"
-                    description="Create polls and monitor responses in real time"
-                    selected={role === "teacher"}
-                    onClick={() => setRole("teacher")}
-                />
-            </div>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "40px",
+                        marginTop: "40px",
+                        marginBottom: "60px",
+                        flexWrap: "wrap",
+                    }}
+                >
+                    <RoleCard
+                        title="I'm a Student"
+                        description="Submit answers and participate in live polls"
+                        selected={role === "student"}
+                        onClick={() => setRole("student")}
+                    />
 
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                }}
-            >
-                <GradientButton
-                    label="Continue"
-                    onClick={handleContinue}
-                    disabled={!role}
-                />
-            </div>
+                    <RoleCard
+                        title="I'm a Teacher"
+                        description="Create polls and monitor responses in real time"
+                        selected={role === "teacher"}
+                        onClick={() => setRole("teacher")}
+                    />
+                </div>
 
-        </PageContainer>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                    }}
+                >
+                    <GradientButton
+                        label="Continue"
+                        onClick={handleContinue}
+                        disabled={!role}
+                    />
+                </div>
+
+            </PageContainer>
+        </div>
     )
 }
 

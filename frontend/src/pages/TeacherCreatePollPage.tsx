@@ -22,7 +22,6 @@ function TeacherCreatePollPage() {
     return (
         <>
             <div style={{
-                paddingLeft: 123,
                 paddingTop: 81
             }}>
                 <PageContainer align="start">

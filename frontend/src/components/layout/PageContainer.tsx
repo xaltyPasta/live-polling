@@ -1,27 +1,27 @@
 interface PageContainerProps {
     children: React.ReactNode
     maxWidth?: number
-    // Added alignment prop with specific allowed values
     align?: "start" | "center" | "end"
 }
 
 function PageContainer({
     children,
     maxWidth = 980,
-    align = "start" // Default to center
+    align = "center"
 }: PageContainerProps) {
-    const alignmentMap = {
-        start: "flex-start",
+
+    const textAlignMap = {
+        start: "left",
         center: "center",
-        end: "flex-end"
-    };
+        end: "right"
+    } as const;
 
     return (
         <div
             style={{
                 minHeight: "100vh",
                 display: "flex",
-                justifyContent: alignmentMap[align],
+                justifyContent: "center",   
                 paddingBottom: "180px"
             }}
         >
@@ -29,6 +29,7 @@ function PageContainer({
                 style={{
                     width: "100%",
                     maxWidth: `${maxWidth}px`,
+                    textAlign: textAlignMap[align]
                 }}
             >
                 {children}

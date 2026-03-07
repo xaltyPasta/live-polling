@@ -5,7 +5,7 @@ interface PageHeaderProps {
 
 function PageHeader({ title, subtitle }: PageHeaderProps) {
     return (
-        <div className="text-left mb-5">
+        <div className="mb-5">
 
             <div
                 style={{
