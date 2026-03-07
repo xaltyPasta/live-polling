@@ -13,8 +13,11 @@ function StudentJoinPage() {
     if (!name.trim()) return
 
     sessionStorage.setItem("username", name)
+    sessionStorage.setItem("sessionId", crypto.randomUUID())
 
     navigate("/student/wait")
+
+
   }
 
   return (

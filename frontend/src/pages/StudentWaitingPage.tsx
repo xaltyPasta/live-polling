@@ -17,6 +17,8 @@ function StudentWaitingPage() {
     const name = sessionStorage.getItem("username")
     const sessionId = sessionStorage.getItem("sessionId")
 
+    console.log("joining poll", name, sessionId)
+
     socket.emit("student:join", { name, sessionId })
   }
 
@@ -31,7 +33,15 @@ function StudentWaitingPage() {
   }
 
   useEffect(() => {
+    if (!socket) return
+
     joinPoll()
+
+    if (socket.connected) {
+      joinPoll()
+    } else {
+      socket.once("connect", joinPoll)
+    }
 
     socket.on("poll:created", handlePollCreated)
     socket.on("poll:state", handlePollState)

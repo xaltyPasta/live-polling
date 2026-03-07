@@ -43,29 +43,29 @@ function StudentVotePage() {
   useEffect(() => {
     if (!socket) return
 
-    const onConnect = () => {
-      console.log("socket connected", socket.id)
-
+    const requestState = () => {
       socket.emit("student:join", {
         name: sessionStorage.getItem("username"),
-        sessionId: sessionStorage.getItem("sessionId")
+        sessionId: sessionStorage.getItem("sessionId"),
       })
     }
 
-    socket.on("connect", onConnect)
+    if (socket.connected) {
+      requestState()
+    } else {
+      socket.once("connect", requestState)
+    }
 
     socket.on("poll:state", handlePollState)
     socket.on("poll:created", handlePollState)
     socket.on("student:removed", handleStudentRemoved)
 
     return () => {
-      socket.off("connect", onConnect)
       socket.off("poll:state", handlePollState)
       socket.off("poll:created", handlePollState)
       socket.off("student:removed", handleStudentRemoved)
     }
-
-  }, [socket])
+  }, [socket, navigate])
 
   const submitVote = () => {
     if (!selected || !poll) return

@@ -1,12 +1,21 @@
 import type { PollOption } from "../../types/poll.types"
 
 interface Props {
-    options: PollOption[]
+    options?: PollOption[]
     showCorrect?: boolean
 }
 
-function PollResults({ options, showCorrect = false }: Props) {
-    const totalVotes = options.reduce((sum, o) => sum + o.votes, 0)
+function PollResults({ options = [], showCorrect = false }: Props) {
+
+    if (!options.length) {
+        return (
+            <div style={{ textAlign: "center", padding: "20px" }}>
+                Waiting for results...
+            </div>
+        )
+    }
+
+    const totalVotes = options.reduce((sum, o) => sum + (o.votes || 0), 0)
 
     return (
         <div>
