@@ -23,6 +23,14 @@ export class VoteService {
             throw new AppError("Poll is not active", 400)
         }
 
+        const option = await prisma.option.findUnique({
+            where: { id: optionId }
+        })
+
+        if (!option || option.pollId !== pollId) {
+            throw new AppError("Invalid option for this poll", 400)
+        }
+
         try {
 
             const vote = await prisma.vote.create({
@@ -39,12 +47,13 @@ export class VoteService {
 
             return {
                 vote,
-                results
+                results,
+                correct: option.isCorrect
             }
 
         } catch {
 
-            throw new Error("You already voted")
+            throw new AppError("You already voted", 400)
 
         }
 

@@ -41,7 +41,7 @@ export class PollTimerManager {
 
         io.emit("poll:ended", {
             poll,
-            results
+            results,
         })
 
         this.timers.delete(pollId)

@@ -14,7 +14,10 @@ export class PollService {
 
     static async createPoll(
         question: string,
-        options: string[],
+        options: {
+            text: string,
+            isCorrect: boolean
+        }[],
         duration: number
     ) {
 
@@ -34,7 +37,8 @@ export class PollService {
                 status: "ACTIVE",
                 options: {
                     create: options.map((o) => ({
-                        text: o
+                        text: o.text,
+                        isCorrect: o.isCorrect
                     }))
                 }
             },
@@ -50,44 +54,46 @@ export class PollService {
             data: {
                 status: "COMPLETED",
                 endedAt: new Date()
+            },
+            include: {
+                options: true
             }
         })
     }
 
     static async getPollResults(pollId: string) {
 
-        const poll = await prisma.poll.findUnique({
-            where: { id: pollId },
+        const options = await prisma.option.findMany({
+            where: { pollId },
             include: {
-                options: {
-                    include: {
-                        votes: true
-                    }
-                }
+                votes: true
             }
         })
 
-        if (!poll) throw new Error("Poll not found")
-
-        const totalVotes = poll.options.reduce(
-            (sum: number, opt: any) => sum + opt.votes.length,
+        const totalVotes = options.reduce(
+            (sum, option) => sum + option.votes.length,
             0
         )
 
-        return poll.options.map((opt: any) => {
+        return options.map(option => {
 
-            const votes = opt.votes.length
+            const voteCount = option.votes.length
+
+            const percentage =
+                totalVotes === 0
+                    ? 0
+                    : Math.round((voteCount / totalVotes) * 100)
 
             return {
-                optionId: opt.id,
-                text: opt.text,
-                votes,
-                percentage:
-                    totalVotes === 0
-                        ? 0
-                        : Math.round((votes / totalVotes) * 100)
+                optionId: option.id,
+                text: option.text,
+                votes: voteCount,
+                percentage,
+                isCorrect: option.isCorrect
             }
+
         })
+
     }
 
     static async getStudentVote(

@@ -34,6 +34,7 @@ model Option {
 
   pollId String
   poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  isCorrect Boolean  @default(false)
 
   votes  Vote[]
 
