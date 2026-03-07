@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+
 import PageHeader from "../components/common/PageHeader"
 import RoleCard from "../components/common/RoleCard"
 import GradientButton from "../components/common/GradientButton"
@@ -16,32 +17,43 @@ function LandingPage() {
 
     return (
         <PageContainer>
+
             <PageHeader
                 title="Welcome to the Live Polling System"
                 subtitle="Please select the role that best describes you to begin using the live polling system"
             />
 
-            <div className="row g-4 mb-5">
-                <div className="col-md-6">
-                    <RoleCard
-                        title="I'm a Student"
-                        description="Submit answers and participate in live polls"
-                        selected={role === "student"}
-                        onClick={() => setRole("student")}
-                    />
-                </div>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "40px",
+                    marginTop: "40px",
+                    marginBottom: "60px",
+                    flexWrap: "wrap",
+                }}
+            >
+                <RoleCard
+                    title="I'm a Student"
+                    description="Submit answers and participate in live polls"
+                    selected={role === "student"}
+                    onClick={() => setRole("student")}
+                />
 
-                <div className="col-md-6">
-                    <RoleCard
-                        title="I'm a Teacher"
-                        description="Create polls and monitor responses in real time"
-                        selected={role === "teacher"}
-                        onClick={() => setRole("teacher")}
-                    />
-                </div>
+                <RoleCard
+                    title="I'm a Teacher"
+                    description="Create polls and monitor responses in real time"
+                    selected={role === "teacher"}
+                    onClick={() => setRole("teacher")}
+                />
             </div>
 
-            <div className="text-center">
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                }}
+            >
                 <GradientButton
                     label="Continue"
                     onClick={handleContinue}
@@ -50,8 +62,6 @@ function LandingPage() {
             </div>
 
         </PageContainer>
-
-
     )
 }
 

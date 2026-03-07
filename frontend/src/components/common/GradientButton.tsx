@@ -9,15 +9,7 @@ function GradientButton({ label, onClick, disabled }: Props) {
         <button
             onClick={onClick}
             disabled={disabled}
-            style={{
-                background: "var(--gradient-primary)",
-                border: "none",
-                padding: "12px 40px",
-                borderRadius: "28px",
-                color: "white",
-                fontWeight: 500,
-                opacity: disabled ? 0.6 : 1,
-            }}
+            className="gradient-button"
         >
             {label}
         </button>

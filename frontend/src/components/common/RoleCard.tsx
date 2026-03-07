@@ -9,19 +9,18 @@ function RoleCard({ title, description, selected, onClick }: Props) {
     return (
         <div
             onClick={onClick}
-            style={{
-                border: selected
-                    ? "2px solid var(--accent-purple)"
-                    : "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "20px",
-                cursor: "pointer",
-                background: "white",
-                transition: "0.2s",
-            }}
+            className={`role-card ${selected ? "selected" : ""}`}
         >
-            <h5>{title}</h5>
-            <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
+            <h5 style={{ fontWeight: 600 }}>{title}</h5>
+
+            <p
+                style={{
+                    fontSize: 14,
+                    color: "var(--text-muted)",
+                    marginTop: 8,
+                    maxWidth: 280,
+                }}
+            >
                 {description}
             </p>
         </div>
