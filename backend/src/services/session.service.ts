@@ -17,7 +17,8 @@ export class SessionService {
             create: {
                 sessionId,
                 name,
-                socketId
+                socketId,
+                active: true
             }
         })
 
@@ -36,9 +37,7 @@ export class SessionService {
 
         const student = await prisma.studentSession.update({
             where: { sessionId },
-            data: {
-                active: false
-            }
+            data: { active: false }
         })
 
         return student
@@ -46,10 +45,18 @@ export class SessionService {
 
     static async getActiveStudents() {
 
-        return prisma.studentSession.findMany({
-            where: { active: true }
+        const students = await prisma.studentSession.findMany({
+            where: { active: true },
+            select: {
+                sessionId: true,
+                name: true
+            }
         })
 
+        return students.map((s) => ({
+            sessionId: s.sessionId,
+            username: s.name
+        }))
     }
 
 }

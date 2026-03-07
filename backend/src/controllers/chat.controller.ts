@@ -9,12 +9,19 @@ export class ChatController {
         pollId?: string
     ) {
 
-        return ChatService.sendMessage(
+        const msg = await ChatService.sendMessage(
             senderName,
             senderRole,
             message,
             pollId
         )
+
+        return {
+            id: msg.id,
+            username: msg.senderName,
+            message: msg.message,
+            createdAt: msg.createdAt
+        }
 
     }
 

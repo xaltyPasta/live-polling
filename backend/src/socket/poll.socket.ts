@@ -7,9 +7,26 @@ import { ChatController } from "../controllers/chat.controller"
 
 export function registerPollSocket(io: Server) {
 
-    io.on("connection", (socket: Socket) => {
+    io.on("connection", async (socket: Socket) => {
 
         console.log("Client connected:", socket.id)
+
+        // SEND INITIAL STATE
+        try {
+
+            const state = await PollController.getActivePollState()
+            const participants = await SessionController.getActiveParticipants()
+
+            socket.emit("poll:state", {
+                poll: state?.poll,
+                results: state?.results,
+                remainingTime: state?.remainingTime,
+                participants
+            })
+
+        } catch {
+            console.error("Failed to send initial poll state")
+        }
 
         // =========================
         // STUDENT JOIN
@@ -27,11 +44,11 @@ export function registerPollSocket(io: Server) {
 
                 const state = await PollController.getPollState(sessionId)
 
-                console.log("student join", name, sessionId)
+                const participants =
+                    await SessionController.getActiveParticipants()
 
-                console.log("poll state returned:", state)
+                io.emit("participants:update", participants)
 
-                // send current poll state to student (late join support)
                 socket.emit("poll:state", {
                     poll: state.poll,
                     results: state.results,
@@ -66,7 +83,8 @@ export function registerPollSocket(io: Server) {
                     duration
                 )
 
-                const results = await PollController.getPollResults(poll.id)
+                const results =
+                    await PollController.getPollResults(poll.id)
 
                 io.emit("poll:created", {
                     poll,
@@ -80,6 +98,25 @@ export function registerPollSocket(io: Server) {
                 })
 
             }
+
+        })
+
+        // =========================
+        // REQUEST STATE
+        // =========================
+
+        socket.on("teacher:request_state", async () => {
+
+            const state = await PollController.getActivePollState()
+            const participants =
+                await SessionController.getActiveParticipants()
+
+            socket.emit("poll:state", {
+                poll: state.poll,
+                results: state.results,
+                remainingTime: state.remainingTime,
+                participants
+            })
 
         })
 
@@ -144,33 +181,24 @@ export function registerPollSocket(io: Server) {
 
         })
 
+
         // =========================
-        // CHAT MESSAGE
+        // REALTIME CHAT
         // =========================
 
         socket.on("chat:send", async (payload) => {
 
-            try {
+            const message = await ChatController.sendMessage(
+                payload.senderName,
+                payload.senderRole,
+                payload.message,
+                payload.pollId
+            )
 
-                const message =
-                    await ChatController.sendMessage(
-                        payload.senderName,
-                        payload.senderRole,
-                        payload.message,
-                        payload.pollId
-                    )
-
-                io.emit("chat:new", message)
-
-            } catch {
-
-                socket.emit("error", {
-                    message: "Chat failed"
-                })
-
-            }
+            io.emit("chat:new", message)
 
         })
+
 
         // =========================
         // REMOVE STUDENT
@@ -204,9 +232,10 @@ export function registerPollSocket(io: Server) {
                     targetSocket?.disconnect(true)
                 }
 
-                io.emit("student:removed_from_list", {
-                    sessionId
-                })
+                const participants =
+                    await SessionController.getActiveParticipants()
+
+                io.emit("participants:update", participants)
 
             } catch {
 
@@ -227,7 +256,14 @@ export function registerPollSocket(io: Server) {
             console.log("Disconnected:", socket.id)
 
             try {
+
                 await SessionController.markInactive(socket.id)
+
+                const participants =
+                    await SessionController.getActiveParticipants()
+
+                io.emit("participants:update", participants)
+
             } catch { }
 
         })
