@@ -2,13 +2,14 @@
 
 A **real-time teacher–student polling platform** built as a full-stack monorepo. Teachers create timed polls, students vote instantly, and results update live for all participants. The system is engineered for **resilience** — polls survive page refreshes, late joins, and server restarts without any data loss.
 
-🔗 **Live Demo:** [Frontend](https://live-polling-pi.vercel.app) &nbsp;|&nbsp; [Backend](https://live-polling-backend-5bfy.onrender.com)
+🔗 **Live Demo:** [Frontend](https://live-polling-pi.vercel.app) &nbsp;|&nbsp; [Backend](https://live-polling-backend-5bfy.onrender.com/health)
 
 ---
 
 ## 📸 Screenshots
 
-> _Add screenshots here — Teacher Dashboard, Student Voting Page, Live Results, Chat_
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/fdc37d27-b70f-4c41-8608-5d745247ea1a" />
+
 
 ---
 
