@@ -1,0 +1,20 @@
+:root {
+    --primary-purple: #7765DA;
+    --primary-blue: #5767D0;
+    --accent-purple: #4F0DCE;
+
+    --background-light: #F2F2F2;
+
+    --text-dark: #373737;
+    --text-muted: #6E6E6E;
+
+    --gradient-primary: linear-gradient(90deg,
+            #7765DA 0%,
+            #5767D0 100%);
+}
+
+body {
+    background: var(--background-light);
+    color: var(--text-dark);
+    font-family: Inter, system-ui, Arial;
+}
