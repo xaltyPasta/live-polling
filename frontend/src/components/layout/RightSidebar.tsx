@@ -10,35 +10,56 @@ interface Props {
 }
 
 function RightSidebar({ participants, onKick }: Props) {
+
     const [tab, setTab] = useState<"chat" | "participants">("chat")
 
     return (
+
         <div
             style={{
                 background: "white",
                 borderRadius: "10px",
                 height: "100%",
-                padding: "16px",
+                padding: "16px"
             }}
         >
+
             <div
                 style={{
                     display: "flex",
                     marginBottom: "12px",
-                    gap: "10px",
+                    gap: "10px"
                 }}
             >
-                <button onClick={() => setTab("chat")}>Chat</button>
-                <button onClick={() => setTab("participants")}>Participants</button>
+
+                <button onClick={() => setTab("chat")}>
+                    Chat
+                </button>
+
+                <button onClick={() => setTab("participants")}>
+                    Participants
+                </button>
+
             </div>
 
-            {tab === "chat" && <ChatPanel />}
+            {tab === "chat" && (
+                <ChatPanel
+                    senderName="Teacher"
+                    senderRole="teacher"
+                />
+            )}
 
             {tab === "participants" && (
-                <ParticipantList participants={participants} onKick={onKick} />
+                <ParticipantList
+                    participants={participants}
+                    onKick={onKick}
+                />
             )}
+
         </div>
+
     )
+
 }
 
 export default RightSidebar
