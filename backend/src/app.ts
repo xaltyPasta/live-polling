@@ -9,10 +9,11 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-app.get("/health", (_req, res) => {
+app.get(["/", "/health"], (_req, res) => {
     return res.status(200).json({
         success: true,
-        message: "Service is running successfully. Please use the following endpoint to access the API:"
+        message: "Service is running successfully. Please use the following endpoint to access the API:",
+        endpoint: "https://live-polling-backend-5bfy.onrender.com"
     });
 });
 
