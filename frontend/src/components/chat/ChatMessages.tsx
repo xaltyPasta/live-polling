@@ -8,26 +8,58 @@ function ChatMessages({ messages }: Props) {
     return (
         <div
             style={{
-                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                gap: "13px",
+                padding: "0 20px",
                 overflowY: "auto",
-                marginBottom: "10px",
+                flex: 1
             }}
         >
-            {messages.map((m) => (
-                <div key={m.id} style={{ marginBottom: "8px" }}>
-                    <strong>{m.username}</strong>
+            {messages.map((m) => {
+
+                const isTeacher = m.username === "TEACHER"
+
+                return (
                     <div
+                        key={m.id}
                         style={{
-                            background: "#f4f4f4",
-                            padding: "8px",
-                            borderRadius: "6px",
-                            fontSize: "14px",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: isTeacher ? "flex-start" : "flex-end"
                         }}
                     >
-                        {m.message}
+                        <div
+                            style={{
+                                fontSize: "12px",
+                                fontWeight: 600,
+                                color: "#4F0BD3",
+                                marginBottom: "4px",
+                                fontFamily: "Sora"
+                            }}
+                        >
+                            {m.username}
+                        </div>
+
+                        <div
+                            style={{
+                                padding: "9px 10px",
+                                background: isTeacher ? "#3A3A3B" : "#8F64E1",
+                                color: "white",
+                                borderRadius: isTeacher
+                                    ? "1px 8px 8px 8px"
+                                    : "8px 1px 8px 8px",
+                                fontSize: "14px",
+                                maxWidth: "70%",
+                                fontFamily: "Sora"
+                            }}
+                        >
+                            {m.message}
+                        </div>
+
                     </div>
-                </div>
-            ))}
+                )
+            })}
         </div>
     )
 }

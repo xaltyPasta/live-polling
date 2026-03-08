@@ -1,40 +1,48 @@
 import { useState } from "react"
 
 interface Props {
-    onSend: (message: string) => void
+    onSend: (msg: string) => void
 }
 
 function ChatInput({ onSend }: Props) {
+
     const [text, setText] = useState("")
 
-    const handleSend = () => {
+    const send = () => {
         if (!text.trim()) return
         onSend(text)
         setText("")
     }
 
     return (
-        <div style={{ display: "flex", gap: "6px" }}>
+        <div
+            style={{
+                padding: "12px",
+                borderTop: "1px solid #eee",
+                display: "flex",
+                gap: "8px"
+            }}
+        >
             <input
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Type a message..."
+                placeholder="Type message..."
                 style={{
                     flex: 1,
-                    padding: "8px",
-                    borderRadius: "6px",
                     border: "1px solid #ddd",
+                    borderRadius: "6px",
+                    padding: "8px"
                 }}
             />
 
             <button
-                onClick={handleSend}
+                onClick={send}
                 style={{
+                    background: "#8F64E1",
                     border: "none",
-                    background: "var(--primary-purple)",
                     color: "white",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
+                    padding: "8px 14px",
+                    borderRadius: "6px"
                 }}
             >
                 Send
