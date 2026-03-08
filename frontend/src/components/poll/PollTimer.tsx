@@ -19,15 +19,30 @@ function PollTimer({ startTime, duration }: Props) {
         return () => clearInterval(interval)
     }, [startTime, duration])
 
+    const formatTime = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60)
+        const secs = seconds % 60
+
+        const mm = String(minutes).padStart(2, "0")
+        const ss = String(secs).padStart(2, "0")
+
+        return `${mm}:${ss}`
+    }
+
     return (
         <div
             style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontFamily: "Sora",
                 fontWeight: 600,
-                marginBottom: "12px",
-                color: "var(--primary-purple)"
+                fontSize: "16px",
+                color: "#E53935"
             }}
         >
-            ⏱ {remaining}s
+            <span>⏱</span>
+            <span>{formatTime(remaining)}</span>
         </div>
     )
 }
