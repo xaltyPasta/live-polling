@@ -1,4 +1,7 @@
+@import "@fontsource/sora/400.css";
+
 :root {
+    font-family: "Sora";
     --gradient-primary: linear-gradient(99.18deg, #8F64E1 -46.89%, #1D68BD 223.45%);
     --badge-gradient: linear-gradient(90deg, #7565D9 0%, #4D0ACD 100%);
     --text-dark: #373737;
@@ -53,7 +56,9 @@ body {
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .role-card:hover {
@@ -122,8 +127,7 @@ body {
 
 .poll-question-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: left;
 }
 
 .poll-question-label {
