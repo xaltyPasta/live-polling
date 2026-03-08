@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import PageContainer from "../components/layout/PageContainer"
 import PageHeader from "../components/common/PageHeader"
 import { useSocket } from "../hooks/socket"
+import SpinnerWidget from "../components/common/SpinnerWidget"
 
 interface PollStatePayload {
   poll: any | null
@@ -54,7 +55,7 @@ function StudentWaitingPage() {
 
   return (
     <div style={{
-      marginTop: 253
+      marginTop: "25dvh"
     }}>
       <PageContainer maxWidth={900}>
         <PageHeader />
@@ -65,28 +66,12 @@ function StudentWaitingPage() {
             textAlign: "center"
           }}
         >
-          <div
-            style={{
-              width: "50px",
-              height: "50px",
-              border: "5px solid #e5e5e5",
-              borderTop: "5px solid var(--primary-purple)",
-              borderRadius: "50%",
-              margin: "auto",
-              animation: "spin 1s linear infinite"
-            }}
-          />
+          <SpinnerWidget/>
         </div>
 
 
         <div style={{ textAlign: "center", marginTop: 30 }}>
-          <p
-            style={{
-              fontFamily: "Sora",
-              fontSize: "40px",
-              fontWeight: 600,
-              whiteSpace: "nowrap"
-            }}
+          <p className="common-text-style"
           >
             Wait for the teacher to ask questions..
           </p>

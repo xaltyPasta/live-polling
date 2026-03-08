@@ -214,3 +214,50 @@ body {
     font-weight: 600;
     margin-top: 20px;
 }
+
+
+.chat-button {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+
+    width: 80px;
+    height: 76px;
+
+    border-radius: 50%;
+    border: none;
+
+    background: #5A66D1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    z-index: 1000;
+
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.18);
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-button:hover {
+    transform: scale(1.07);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.chat-button:active {
+    transform: scale(0.95);
+}
+
+
+.poll-option-row:hover {
+    border: 1.5px solid #8F64E1;
+}
+
+.common-text-style {
+    font-family: "Sora";
+    font-size: 40px;
+    font-weight: 600;
+    white-space: "nowrap";
+}

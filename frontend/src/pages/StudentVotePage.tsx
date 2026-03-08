@@ -6,9 +6,8 @@ import { useSocket } from "../hooks/socket"
 import PageContainer from "../components/layout/PageContainer"
 import PollCard from "../components/poll/PollCard"
 import PollOption from "../components/poll/PollOption"
-import PollTimer from "../components/poll/PollTimer"
-
 import type { Poll } from "../types/poll.types"
+import SpinnerWidget from "../components/common/SpinnerWidget"
 
 interface PollStatePayload {
   poll: Poll
@@ -84,46 +83,83 @@ function StudentVotePage() {
 
   if (!poll) {
     return (
-      <PageContainer maxWidth={640}>
-        <div style={{ textAlign: "center" }}>
-          Loading poll...
-        </div>
-      </PageContainer>
+      <div style={{
+        marginTop: "25dvh"
+      }}>
+        <PageContainer maxWidth={640}>
+          <SpinnerWidget />
+
+          <div className="common-text-style">
+            Loading poll...
+          </div>
+        </PageContainer>
+      </div>
     )
   }
 
   return (
-    <PageContainer maxWidth={640}>
-      <PollCard question={poll.question}>
-        <div style={{ marginBottom: "16px" }}>
-          <PollTimer startTime={poll.startTime} duration={poll.duration} />
-        </div>
-
-        {poll.options.map((option) => (
-          <PollOption
-            key={option.id}
-            text={option.text}
-            selected={selected === option.id}
-            onClick={() => setSelected(option.id)}
-          />
-        ))}
-
-        <button
-          onClick={submitVote}
+    <div style={{
+      marginTop: "25dvh"
+    }}>
+      <PageContainer maxWidth={640}>
+        <div
           style={{
-            marginTop: "10px",
-            background: "var(--gradient-primary)",
-            border: "none",
-            padding: "10px 24px",
-            borderRadius: "20px",
-            color: "white"
+            position: "relative",
+            width: "fit-content"
           }}
         >
-          Submit
-        </button>
+          <PollCard
+            question={poll.question}
+            startTime={poll.startTime}
+            duration={poll.duration}
+          >
+            {poll.options.map((option, index) => (
+              <PollOption
+                key={option.id}
+                index={index}
+                text={option.text}
+                selected={selected === option.id}
+                onClick={() => setSelected(option.id)}
+              />
+            ))}
+          </PollCard>
 
-      </PollCard>
-    </PageContainer>
+          <button
+            onClick={submitVote}
+            disabled={!selected}
+            style={{
+              position: "absolute",
+              right: "0",
+              bottom: "-80px",
+
+              width: "233.93px",
+              height: "57.58px",
+
+              borderRadius: "34px",
+              border: "none",
+              cursor: selected ? "pointer" : "not-allowed",
+
+              background:
+                "linear-gradient(99.18deg,#8F64E1 -46.89%,#1D68BD 223.45%)",
+
+              fontFamily: "Sora",
+              fontWeight: 600,
+              fontSize: "18px",
+              color: "#FFFFFF",
+
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+
+              opacity: selected ? 1 : 0.6,
+              transition: "all 0.2s ease"
+            }}
+          >
+            Submit
+          </button>
+        </div>
+      </PageContainer>
+    </div>
   )
 }
 

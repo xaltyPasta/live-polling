@@ -4,66 +4,92 @@ import { useNavigate } from "react-router-dom"
 import PageContainer from "../components/layout/PageContainer"
 import PollCard from "../components/poll/PollCard"
 import PollResults from "../components/poll/PollResults"
+import ChatButton from "../components/chat/ChatButton"
+import FloatingChatPanel from "../components/layout/FloatingChatPanel"
 
 import { useSocket } from "../hooks/socket"
 import type { Poll, PollOption } from "../types/poll.types"
 
 function StudentResultPage() {
+
     const socket = useSocket()
     const navigate = useNavigate()
 
     const [poll, setPoll] = useState<Poll | null>(null)
+    const [chatOpen, setChatOpen] = useState<boolean>(false)
 
-    useEffect(() => {
+    const username = sessionStorage.getItem("username") || "Student"
+    const sessionId = sessionStorage.getItem("sessionId")
+
+    const toggleChat = () => {
+        setChatOpen(prev => !prev)
+    }
+
+    const requestState = () => {
         if (!socket) return
 
-        // request latest poll state when page loads
-        const requestState = () => {
-            socket.emit("student:join", {
-                name: sessionStorage.getItem("username"),
-                sessionId: sessionStorage.getItem("sessionId"),
-            })
-        }
+        socket.emit("student:join", {
+            name: username,
+            sessionId
+        })
+    }
 
-        if (socket.connected) requestState()
-        else socket.once("connect", requestState)
+    const handlePollUpdate = (payload: any) => {
 
-        const handlePollUpdate = (payload: any) => {
-            setPoll((prev) => {
-                if (!prev) {
-                    return {
-                        id: payload.pollId,
-                        question: "",
-                        options: payload.results as PollOption[],
-                        duration: 0,
-                        startTime: Date.now()
-                    } as Poll
+        setPoll(prev => {
+
+            if (!prev) {
+                const initialPoll: Poll = {
+                    id: payload.pollId,
+                    question: "",
+                    options: payload.results as PollOption[],
+                    duration: 0,
+                    startTime: Date.now()
                 }
 
-                return {
-                    ...prev,
-                    options: payload.results as PollOption[]
-                }
-            })
-        }
-
-        const handlePollEnded = (payload: any) => {
-            if (payload?.poll) {
-                setPoll({
-                    ...payload.poll,
-                    options: payload.results as PollOption[]
-                })
+                return initialPoll
             }
-        }
 
-        const handlePollState = (payload: any) => {
-            if (payload?.poll) {
-                setPoll(payload.poll)
+            return {
+                ...prev,
+                options: payload.results as PollOption[]
             }
+
+        })
+
+    }
+
+    const handlePollEnded = (payload: any) => {
+
+        if (!payload?.poll) return
+
+        const updatedPoll: Poll = {
+            ...payload.poll,
+            options: payload.results as PollOption[]
         }
 
-        const handleStudentRemoved = () => {
-            navigate("/kicked")
+        setPoll(updatedPoll)
+
+    }
+
+    const handlePollState = (payload: any) => {
+        if (payload?.poll) {
+            setPoll(payload.poll)
+        }
+    }
+
+    const handleStudentRemoved = () => {
+        navigate("/kicked")
+    }
+
+    useEffect(() => {
+
+        if (!socket) return
+
+        if (socket.connected) {
+            requestState()
+        } else {
+            socket.once("connect", requestState)
         }
 
         socket.on("poll:update", handlePollUpdate)
@@ -72,40 +98,69 @@ function StudentResultPage() {
         socket.on("student:removed", handleStudentRemoved)
 
         return () => {
+
             socket.off("poll:update", handlePollUpdate)
             socket.off("poll:ended", handlePollEnded)
             socket.off("poll:state", handlePollState)
             socket.off("student:removed", handleStudentRemoved)
+
         }
-    }, [socket, navigate])
+
+    }, [socket])
 
     if (!poll) {
+
         return (
-            <PageContainer maxWidth={640}>
-                <div style={{ textAlign: "center" }}>
-                    Waiting for results...
-                </div>
-            </PageContainer>
+            <div style={{ marginTop: "25dvh" }}>
+                <PageContainer maxWidth={640}>
+                    <div style={{ textAlign: "center" }}>
+                        Waiting for results...
+                    </div>
+                </PageContainer>
+            </div>
         )
+
     }
 
     return (
-        <PageContainer maxWidth={640}>
-            <PollCard question={poll.question}>
-                <PollResults options={poll.options} showCorrect />
 
-                <div
-                    style={{
-                        marginTop: "20px",
-                        textAlign: "center",
-                        color: "var(--text-muted)",
-                    }}
-                >
-                    Wait for the teacher to ask the next question..
-                </div>
-            </PollCard>
-        </PageContainer>
+        <div style={{ marginTop: "25dvh" }}>
+
+            <PageContainer maxWidth={640}>
+
+                <PollCard question={poll.question}>
+
+                    <PollResults
+                        options={poll.options}
+                        showCorrect
+                    />
+
+                </PollCard>
+
+                <p style={{
+                    paddingTop: "5dvh",
+                    fontFamily: "Sora",
+                    fontSize: "20px",
+                    fontWeight: "bold"
+                }}>
+                    Waiting for the teacher to ask the next question..
+                </p>
+
+
+                <ChatButton onClick={toggleChat} />
+
+                <FloatingChatPanel
+                    open={chatOpen}
+                    participants={[]}
+                />
+
+            </PageContainer>
+
+
+        </div>
+
     )
+
 }
 
 export default StudentResultPage

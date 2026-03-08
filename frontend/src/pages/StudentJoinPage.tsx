@@ -22,7 +22,7 @@ function StudentJoinPage() {
 
   return (
     <div style={{
-      marginTop: 81
+      marginTop: "25dvh"
     }}>
       <PageContainer maxWidth={520}>
         <PageHeader

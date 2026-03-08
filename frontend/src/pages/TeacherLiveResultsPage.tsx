@@ -3,13 +3,15 @@ import { useEffect, useState } from "react"
 import PageContainer from "../components/layout/PageContainer"
 import PollCard from "../components/poll/PollCard"
 import PollResults from "../components/poll/PollResults"
-import PollTimer from "../components/poll/PollTimer"
-import RightSidebar from "../components/layout/RightSidebar"
+import FloatingChatPanel from "../components/layout/FloatingChatPanel"
+import ChatButton from "../components/chat/ChatButton"
 
 import { useSocket } from "../hooks/socket"
 
-import type { Poll } from "../types/poll.types"
+import type { Poll, PollOption } from "../types/poll.types"
 import type { Participant } from "../types/session.types"
+import SpinnerWidget from "../components/common/SpinnerWidget"
+import { useNavigate } from "react-router-dom"
 
 interface PollEndResult {
   optionId: string
@@ -22,11 +24,14 @@ interface PollEndResult {
 function TeacherLiveResultsPage() {
 
   const socket = useSocket()
+  const navigate = useNavigate()
 
   const [poll, setPoll] = useState<Poll | null>(null)
   const [participants, setParticipants] = useState<Participant[]>([])
   const [results, setResults] = useState<PollEndResult[]>([])
   const [ended, setEnded] = useState(false)
+
+  const [chatOpen, setChatOpen] = useState(false)
 
   const normalizePoll = (incoming: any): Poll => ({
     ...incoming,
@@ -65,7 +70,6 @@ function TeacherLiveResultsPage() {
     }
 
     const incomingPoll = payload.poll ?? payload
-
     setPoll(normalizePoll(incomingPoll))
 
   }
@@ -84,7 +88,6 @@ function TeacherLiveResultsPage() {
 
   }
 
-  // Restore poll state on refresh
   const handlePollState = (payload: any) => {
 
     if (!payload?.poll) return
@@ -150,79 +153,183 @@ function TeacherLiveResultsPage() {
   if (!poll) {
 
     return (
-      <PageContainer min-Width={700}>
-        <div style={{ textAlign: "center" }}>
-          Waiting for poll data...
+      <div style={{ marginTop: "25dvh" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "40px",
+            right: "80px"
+          }}
+        >
+          <button
+            onClick={() => navigate("/teacher/poll-history")}
+            style={{
+              height: "46px",
+              padding: "0 24px",
+              borderRadius: "28px",
+              border: "none",
+              cursor: "pointer",
+
+              background:
+                "linear-gradient(99.18deg,#8F64E1 -46.89%,#1D68BD 223.45%)",
+
+              fontFamily: "Sora",
+              fontWeight: 600,
+              fontSize: "14px",
+              color: "#FFFFFF",
+
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            👁 View Poll history
+          </button>
         </div>
-      </PageContainer>
+        <PageContainer maxWidth={620}>
+          <SpinnerWidget />
+          <div className="common-text-style"
+          >
+            Waiting for poll data...
+          </div>
+        </PageContainer>
+      </div>
     )
 
   }
 
   return (
 
-    <PageContainer min-Width={1100}>
+    <div
+      style={{
+        marginTop: "25dvh",
+        display: "flex",
+        justifyContent: "center"
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: "40px",
+          right: "80px"
+        }}
+      >
+        <button
+          onClick={() => navigate("/history")}
+          style={{
+            height: "46px",
+            padding: "0 24px",
+            borderRadius: "28px",
+            border: "none",
+            cursor: "pointer",
 
-      <div className="row g-4">
+            background:
+              "linear-gradient(99.18deg,#8F64E1 -46.89%,#1D68BD 223.45%)",
 
-        <div className="col-md-8">
+            fontFamily: "Sora",
+            fontWeight: 600,
+            fontSize: "14px",
+            color: "#FFFFFF",
 
-          <PollCard question={poll.question}>
-
-            {!ended && (
-              <PollTimer
-                startTime={poll.startTime}
-                duration={poll.duration}
-              />
-            )}
-
-            {!ended && (
-              <PollResults options={poll.options} />
-            )}
-
-            {ended && (
-
-              <div>
-
-                {results.map((r) => (
-
-                  <div
-                    key={r.optionId}
-                    style={{ marginBottom: 12 }}
-                  >
-
-                    <strong>
-                      {r.text} {r.isCorrect ? "✓" : ""}
-                    </strong>
-
-                    <div>
-                      {r.votes} votes ({r.percentage}%)
-                    </div>
-
-                  </div>
-
-                ))}
-
-              </div>
-
-            )}
-
-          </PollCard>
-
-        </div>
-
-        <div className="col-md-4">
-
-          <RightSidebar
-            participants={participants}
-            onKick={kickStudent}
-          />
-
-        </div>
-
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
+          }}
+        >
+          👁 View Poll history
+        </button>
       </div>
 
-    </PageContainer>
+      <PageContainer maxWidth={1100}>
+
+        <div className="row g-4">
+
+          <div className="col-md-8">
+
+            <div
+              style={{
+                position: "relative",
+                width: "fit-content"
+              }}
+            >
+
+              <PollCard
+                question={poll.question}
+                startTime={poll.startTime}
+                duration={poll.duration}
+              >
+
+                {!ended && (
+                  <PollResults options={poll.options} />
+                )}
+
+                {ended && (
+
+                  <PollResults
+                    options={results.map((r): PollOption => ({
+                      id: r.optionId,
+                      text: r.text,
+                      votes: r.votes,
+                      correct: r.isCorrect
+                    }))}
+                    showCorrect
+                  />
+
+                )}
+
+              </PollCard>
+
+              {ended && (
+                <button
+                  onClick={() => navigate("/teacher/create")}
+                  style={{
+                    position: "absolute",
+                    right: "0",
+                    bottom: "-80px",
+
+                    width: "260px",
+                    height: "57.58px",
+
+                    borderRadius: "34px",
+                    border: "none",
+                    cursor: "pointer",
+
+                    background:
+                      "linear-gradient(99.18deg,#8F64E1 -46.89%,#1D68BD 223.45%)",
+
+                    fontFamily: "Sora",
+                    fontWeight: 600,
+                    fontSize: "18px",
+                    color: "#FFFFFF",
+
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  + Ask a new question
+                </button>
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <ChatButton onClick={() => setChatOpen(!chatOpen)} />
+
+        <FloatingChatPanel
+          open={chatOpen}
+          participants={participants}
+          onKick={kickStudent}
+        />
+
+      </PageContainer>
+
+    </div>
 
   )
 
