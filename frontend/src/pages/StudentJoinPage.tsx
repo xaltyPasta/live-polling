@@ -21,46 +21,67 @@ function StudentJoinPage() {
   }
 
   return (
-    <PageContainer maxWidth={520}>
-      <PageHeader
-        title="Let's Get Started"
-        subtitle="Enter your name to join the live polling session"
-      />
-
-      <div style={{ marginTop: "40px" }}>
-        <label
-          style={{
-            fontWeight: 500,
-            marginBottom: "8px",
-            display: "block",
-          }}
-        >
-          Enter your Name
-        </label>
-
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Your name"
-          style={{
-            width: "100%",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #ddd",
-            marginBottom: "30px",
-          }}
+    <div style={{
+      marginTop: 81
+    }}>
+      <PageContainer maxWidth={520}>
+        <PageHeader
+          title={
+            <>
+              Let's{" "}
+              <span style={{
+                fontWeight: 600
+              }}>Get Started</span>
+            </>
+          }
+          subtitle={
+            <>
+              If you're a student, you'll be able to{" "}
+              <span style={{ fontWeight: 600, color: "#000" }}>
+                submit your answers
+              </span>
+              , participate in live polls, and see how your responses compare with your classmates
+            </>
+          }
         />
 
-        <div style={{ textAlign: "center" }}>
-          <GradientButton
-            label="Continue"
-            onClick={handleContinue}
-            disabled={!name.trim()}
+        <div style={{ marginTop: "40px", justifyContent: "left" }}>
+          <label
+            style={{
+              fontWeight: 500,
+              marginBottom: "8px",
+              display: "block",
+              textAlign: "left"
+            }}
+          >
+            Enter your Name
+          </label>
+
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ddd",
+              marginBottom: "30px",
+              background: "#F2F2F2",
+            }}
           />
+
+          <div style={{ textAlign: "center" }}>
+            <GradientButton
+              label="Continue"
+              onClick={handleContinue}
+              disabled={!name.trim()}
+            />
+          </div>
         </div>
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </div>
   )
 }
 

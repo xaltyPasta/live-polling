@@ -17,12 +17,19 @@ function LandingPage() {
 
     return (
         <div style={{
-                paddingTop: 81
-            }}>
+            paddingTop: 81
+        }}>
             <PageContainer align="center">
 
                 <PageHeader
-                    title="Welcome to the Live Polling System"
+                    title={
+                        <>
+                            Welcome to the{" "}
+                            <span style={{ fontWeight: 600 }}>
+                                Live Polling System
+                            </span>
+                        </>
+                    }
                     subtitle="Please select the role that best describes you to begin using the live polling system"
                 />
 

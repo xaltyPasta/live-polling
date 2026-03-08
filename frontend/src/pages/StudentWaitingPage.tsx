@@ -53,31 +53,48 @@ function StudentWaitingPage() {
   }, [socket, navigate])
 
   return (
-    <PageContainer maxWidth={520}>
-      <PageHeader
-        title="You're all set!"
-        subtitle="Wait for the teacher to ask questions.."
-      />
+    <div style={{
+      marginTop: 253
+    }}>
+      <PageContainer maxWidth={900}>
+        <PageHeader />
 
-      <div
-        style={{
-          marginTop: "40px",
-          textAlign: "center"
-        }}
-      >
         <div
           style={{
-            width: "50px",
-            height: "50px",
-            border: "5px solid #e5e5e5",
-            borderTop: "5px solid var(--primary-purple)",
-            borderRadius: "50%",
-            margin: "auto",
-            animation: "spin 1s linear infinite"
+            marginTop: "40px",
+            textAlign: "center"
           }}
-        />
-      </div>
-    </PageContainer>
+        >
+          <div
+            style={{
+              width: "50px",
+              height: "50px",
+              border: "5px solid #e5e5e5",
+              borderTop: "5px solid var(--primary-purple)",
+              borderRadius: "50%",
+              margin: "auto",
+              animation: "spin 1s linear infinite"
+            }}
+          />
+        </div>
+
+
+        <div style={{ textAlign: "center", marginTop: 30 }}>
+          <p
+            style={{
+              fontFamily: "Sora",
+              fontSize: "40px",
+              fontWeight: 600,
+              whiteSpace: "nowrap"
+            }}
+          >
+            Wait for the teacher to ask questions..
+          </p>
+        </div>
+
+      </PageContainer>
+
+    </div>
   )
 }
 
