@@ -7,6 +7,7 @@ import PollResults from "../components/poll/PollResults"
 
 import { getPollHistory } from "../services/poll.service"
 import type { Poll } from "../types/poll.types"
+import SpinnerWidget from "../components/common/SpinnerWidget"
 
 function PollHistoryPage() {
     const [polls, setPolls] = useState<Poll[]>([])
@@ -25,6 +26,7 @@ function PollHistoryPage() {
             }}>
                 <PageContainer maxWidth={700}>
                     <PageHeader title="Poll History" />
+                    <SpinnerWidget/>
                     <div className="common-text-style">
                         Loading...
                     </div>

@@ -30,7 +30,11 @@ function PageHeader({ title, subtitle }: PageHeaderProps) {
             </h1>
 
             {subtitle && (
-                <p className="mt-3">
+                <p style={{
+                    fontSize: "18px",
+                    color: "var(--text-muted)",
+                    fontFamily: "Sora"
+                }}>
                     {subtitle}
                 </p>
             )}

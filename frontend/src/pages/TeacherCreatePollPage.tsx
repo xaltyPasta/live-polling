@@ -22,13 +22,14 @@ function TeacherCreatePollPage() {
     return (
         <>
             <div style={{
-                marginTop:"10dvh"
+                marginTop: "10dvh"
             }}>
                 <PageContainer align="start">
 
-                    <PageHeader 
+                    <PageHeader
                         title="Let's Get Started"
-                        subtitle="You'll have the ability to create and manage polls, ask questions, and monitor your students' responses in real-time."
+                        subtitle="You'll have the ability to create and manage polls, ask questions, and monitor your students'
+                        responses in real-time."
                     />
 
                     <CreatePollForm onChange={setFormData} />
