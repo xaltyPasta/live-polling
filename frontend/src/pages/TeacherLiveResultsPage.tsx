@@ -162,7 +162,7 @@ function TeacherLiveResultsPage() {
           }}
         >
           <button
-            onClick={() => navigate("/teacher/poll-history")}
+            onClick={() => navigate("/history")}
             style={{
               height: "46px",
               padding: "0 24px",
@@ -281,7 +281,7 @@ function TeacherLiveResultsPage() {
 
               {ended && (
                 <button
-                  onClick={() => navigate("/teacher/create")}
+                  onClick={() => navigate("/teacher")}
                   style={{
                     position: "absolute",
                     right: "0",
