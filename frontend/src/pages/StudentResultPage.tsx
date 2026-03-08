@@ -39,15 +39,13 @@ function StudentResultPage() {
         setPoll(prev => {
 
             if (!prev) {
-                const initialPoll: Poll = {
+                return {
                     id: payload.pollId,
                     question: "",
                     options: payload.results as PollOption[],
                     duration: 0,
                     startTime: Date.now()
                 }
-
-                return initialPoll
             }
 
             return {
@@ -73,9 +71,22 @@ function StudentResultPage() {
     }
 
     const handlePollState = (payload: any) => {
-        if (payload?.poll) {
+
+        if (!payload) return
+
+        if (payload.poll && payload.poll.status === "ACTIVE") {
+            navigate("/student/vote")
+            return
+        }
+
+        if (payload.poll) {
             setPoll(payload.poll)
         }
+
+    }
+
+    const handlePollStarted = () => {
+        navigate("/student/vote")
     }
 
     const handleStudentRemoved = () => {
@@ -95,6 +106,7 @@ function StudentResultPage() {
         socket.on("poll:update", handlePollUpdate)
         socket.on("poll:ended", handlePollEnded)
         socket.on("poll:state", handlePollState)
+        socket.on("poll:started", handlePollStarted)
         socket.on("student:removed", handleStudentRemoved)
 
         return () => {
@@ -102,6 +114,7 @@ function StudentResultPage() {
             socket.off("poll:update", handlePollUpdate)
             socket.off("poll:ended", handlePollEnded)
             socket.off("poll:state", handlePollState)
+            socket.off("poll:started", handlePollStarted)
             socket.off("student:removed", handleStudentRemoved)
 
         }
@@ -139,13 +152,11 @@ function StudentResultPage() {
 
                 <p style={{
                     paddingTop: "5dvh",
-                    fontFamily: "Sora",
                     fontSize: "20px",
                     fontWeight: "bold"
                 }}>
                     Waiting for the teacher to ask the next question..
                 </p>
-
 
                 <ChatButton onClick={toggleChat} />
 
@@ -155,7 +166,6 @@ function StudentResultPage() {
                 />
 
             </PageContainer>
-
 
         </div>
 
