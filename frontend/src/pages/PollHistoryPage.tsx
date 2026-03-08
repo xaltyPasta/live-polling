@@ -13,43 +13,44 @@ function PollHistoryPage() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        async function loadHistory() {
-            try {
-                const data = await getPollHistory()
-                setPolls(data)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        loadHistory()
+        getPollHistory()
+            .then(setPolls)
+            .finally(() => setLoading(false))
     }, [])
 
     if (loading) {
         return (
-            <PageContainer maxWidth={700}>
-                <PageHeader title="Poll History" />
-                <div style={{ textAlign: "center", marginTop: "30px" }}>
-                    Loading...
-                </div>
-            </PageContainer>
+            <div style={{
+                marginTop: "25dvh"
+            }}>
+                <PageContainer maxWidth={700}>
+                    <PageHeader title="Poll History" />
+                    <div className="common-text-style">
+                        Loading...
+                    </div>
+                </PageContainer>
+            </div>
         )
     }
 
     return (
-        <PageContainer maxWidth={700}>
-            <PageHeader title="Poll History" />
+        <div style={{
+            marginTop: "10dvh"
+        }}>
+            <PageContainer maxWidth={700}>
+                <PageHeader title=" View Poll History" />
 
-            <div style={{ marginTop: "30px" }}>
-                {polls.map((poll) => (
-                    <div key={poll.id} style={{ marginBottom: "24px" }}>
-                        <PollCard question={poll.question}>
-                            <PollResults options={poll.options} showCorrect />
-                        </PollCard>
-                    </div>
-                ))}
-            </div>
-        </PageContainer>
+                <div style={{ marginTop: "30px" }}>
+                    {polls.map((poll) => (
+                        <div key={poll.id} style={{ marginBottom: "24px" }}>
+                            <PollCard question={poll.question}>
+                                <PollResults options={poll.options} showCorrect />
+                            </PollCard>
+                        </div>
+                    ))}
+                </div>
+            </PageContainer>
+        </div>
     )
 }
 

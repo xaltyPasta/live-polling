@@ -17,7 +17,7 @@ function LandingPage() {
 
     return (
         <div style={{
-            paddingTop: 81
+            marginTop:"25dvh"
         }}>
             <PageContainer align="center">
 
