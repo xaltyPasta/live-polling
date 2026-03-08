@@ -1,11 +1,22 @@
 @import "@fontsource/sora/400.css";
 
 :root {
-    font-family: "Sora";
     --gradient-primary: linear-gradient(99.18deg, #8F64E1 -46.89%, #1D68BD 223.45%);
     --badge-gradient: linear-gradient(90deg, #7565D9 0%, #4D0ACD 100%);
     --text-dark: #373737;
     --text-muted: #6E6E6E;
+}
+
+html,
+body {
+    margin: 0;
+    font-family: "Sora", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    font-family: inherit;
 }
 
 html,
@@ -15,9 +26,6 @@ body,
 }
 
 body {
-    margin: 0;
-    background: var(--background-light);
-    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     background: #FFFFFF;
 }
 
