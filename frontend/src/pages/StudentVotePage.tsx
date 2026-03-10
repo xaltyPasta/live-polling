@@ -63,12 +63,20 @@ function StudentVotePage() {
     if (!socket) return
 
     const requestState = () => {
-
       socket.emit("student:join", {
         name: sessionStorage.getItem("username"),
         sessionId: sessionStorage.getItem("sessionId"),
       })
+    }
 
+    // ✅ Redirect to results when poll ends
+    const handlePollEnded = (payload: any) => {
+      navigate("/student/result", {
+        state: {
+          poll: payload.poll,
+          results: payload.results
+        }
+      })
     }
 
     if (socket.connected) {
@@ -79,16 +87,16 @@ function StudentVotePage() {
 
     socket.on("poll:state", handlePollState)
     socket.on("poll:created", handlePollState)
+    socket.on("poll:ended", handlePollEnded)       // ✅ added
     socket.on("student:removed", handleStudentRemoved)
     socket.on("participants:update", handleParticipantsUpdate)
 
     return () => {
-
       socket.off("poll:state", handlePollState)
       socket.off("poll:created", handlePollState)
+      socket.off("poll:ended", handlePollEnded)  // ✅ added
       socket.off("student:removed", handleStudentRemoved)
       socket.off("participants:update", handleParticipantsUpdate)
-
     }
 
   }, [socket, navigate])

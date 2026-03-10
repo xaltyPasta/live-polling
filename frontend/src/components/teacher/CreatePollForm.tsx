@@ -83,7 +83,6 @@ function CreatePollForm({ onChange }: Props) {
                     <option value={30}>30 seconds</option>
                     <option value={60}>60 seconds</option>
                     <option value={90}>90 seconds</option>
-                    <option value={360}>360 seconds</option>
                 </select>
             </div>
 

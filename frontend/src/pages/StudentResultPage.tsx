@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 import PageContainer from "../components/layout/PageContainer"
 import PollCard from "../components/poll/PollCard"
@@ -16,6 +16,7 @@ function StudentResultPage() {
 
     const socket = useSocket()
     const navigate = useNavigate()
+    const location = useLocation()
 
     const [poll, setPoll] = useState<Poll | null>(null)
     const [participants, setParticipants] = useState<Participant[]>([])
@@ -110,6 +111,12 @@ function StudentResultPage() {
     }
 
     useEffect(() => {
+        if (location.state?.poll) {
+            setPoll({
+                ...location.state.poll,
+                options: location.state.results ?? location.state.poll.options
+            })
+        }
 
         if (!socket) return
 
