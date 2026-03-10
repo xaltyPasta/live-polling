@@ -1,6 +1,7 @@
 export interface ChatMessage {
     id: string
-    username: string
+    senderName: string
+    senderRole: "TEACHER" | "STUDENT"
     message: string
-    createdAt: number
+    createdAt: string
 }

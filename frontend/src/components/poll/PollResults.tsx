@@ -42,7 +42,7 @@ function PollResults({ options = [], showCorrect = false }: Props) {
                 return (
 
                     <div
-                        key={option.id}
+                        key={option.id ?? `option-${index}`}
                         style={{
                             position: "relative",
                             height: "55px",
@@ -103,12 +103,10 @@ function PollResults({ options = [], showCorrect = false }: Props) {
                             }}
                         >
 
-                            {/* Base black text */}
                             <span style={{ color: "#292929" }}>
-                                {option.text} {highlight && "✓"}
+                                {option.text} {highlight ? "✓" : ""}
                             </span>
 
-                            {/* White text clipped by bar */}
                             <span
                                 style={{
                                     position: "absolute",
@@ -121,7 +119,7 @@ function PollResults({ options = [], showCorrect = false }: Props) {
                                     pointerEvents: "none"
                                 }}
                             >
-                                {option.text} {highlight && "✓"}
+                                {option.text} {highlight ? "✓" : ""}
                             </span>
 
                         </div>

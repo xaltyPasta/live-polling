@@ -195,7 +195,15 @@ export function registerPollSocket(io: Server) {
                 payload.pollId
             )
 
-            io.emit("chat:new", message)
+            io.to(payload.pollId).emit("chat:new", message)
+
+        })
+
+        socket.on("chat:history", async ({ pollId }) => {
+
+            const messages = await ChatController.getRecentMessages(pollId)
+
+            socket.emit("chat:history", messages)
 
         })
 

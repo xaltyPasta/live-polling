@@ -6,7 +6,7 @@ export class ChatController {
         senderName: string,
         senderRole: "TEACHER" | "STUDENT",
         message: string,
-        pollId?: string
+        pollId: string
     ) {
 
         const msg = await ChatService.sendMessage(
@@ -19,9 +19,25 @@ export class ChatController {
         return {
             id: msg.id,
             username: msg.senderName,
+            senderRole: msg.senderRole,
             message: msg.message,
             createdAt: msg.createdAt
         }
+
+    }
+
+    static async getRecentMessages(pollId: string) {
+
+        const messages = await ChatService.getRecentMessages(pollId)
+
+        return messages.map(msg => ({
+            id: msg.id,
+            username: msg.senderName,
+            senderName: msg.senderName,
+            senderRole: msg.senderRole,
+            message: msg.message,
+            createdAt: msg.createdAt
+        }))
 
     }
 

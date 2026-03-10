@@ -8,7 +8,9 @@ import ChatButton from "../components/chat/ChatButton"
 import FloatingChatPanel from "../components/layout/FloatingChatPanel"
 
 import { useSocket } from "../hooks/socket"
+
 import type { Poll, PollOption } from "../types/poll.types"
+import type { Participant } from "../types/session.types"
 
 function StudentResultPage() {
 
@@ -16,7 +18,8 @@ function StudentResultPage() {
     const navigate = useNavigate()
 
     const [poll, setPoll] = useState<Poll | null>(null)
-    const [chatOpen, setChatOpen] = useState<boolean>(false)
+    const [participants, setParticipants] = useState<Participant[]>([])
+    const [chatOpen, setChatOpen] = useState(false)
 
     const username = sessionStorage.getItem("username") || "Student"
     const sessionId = sessionStorage.getItem("sessionId")
@@ -26,12 +29,14 @@ function StudentResultPage() {
     }
 
     const requestState = () => {
+
         if (!socket) return
 
         socket.emit("student:join", {
             name: username,
             sessionId
         })
+
     }
 
     const handlePollUpdate = (payload: any) => {
@@ -74,15 +79,26 @@ function StudentResultPage() {
 
         if (!payload) return
 
-        if (payload.poll && payload.poll.status === "ACTIVE") {
+        if (payload.poll && payload.poll.status === "ACTIVE" && !payload.studentVote) {
             navigate("/student/vote")
             return
         }
 
         if (payload.poll) {
-            setPoll(payload.poll)
+            setPoll({
+                ...payload.poll,
+                options: payload.results ?? payload.poll.options
+            })
         }
 
+        if (payload?.participants) {
+            setParticipants(payload.participants)
+        }
+
+    }
+
+    const handleParticipantsUpdate = (data: Participant[]) => {
+        setParticipants(data)
     }
 
     const handlePollStarted = () => {
@@ -109,6 +125,8 @@ function StudentResultPage() {
         socket.on("poll:started", handlePollStarted)
         socket.on("student:removed", handleStudentRemoved)
 
+        socket.on("participants:update", handleParticipantsUpdate)
+
         return () => {
 
             socket.off("poll:update", handlePollUpdate)
@@ -116,6 +134,8 @@ function StudentResultPage() {
             socket.off("poll:state", handlePollState)
             socket.off("poll:started", handlePollStarted)
             socket.off("student:removed", handleStudentRemoved)
+
+            socket.off("participants:update", handleParticipantsUpdate)
 
         }
 
@@ -162,7 +182,11 @@ function StudentResultPage() {
 
                 <FloatingChatPanel
                     open={chatOpen}
-                    participants={[]}
+                    participants={participants}
+                    pollId={poll.id}
+                    senderName={username}
+                    senderRole="STUDENT"
+                    showKick={false}
                 />
 
             </PageContainer>

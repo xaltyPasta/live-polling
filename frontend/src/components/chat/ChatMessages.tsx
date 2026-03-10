@@ -5,6 +5,7 @@ interface Props {
 }
 
 function ChatMessages({ messages }: Props) {
+
     return (
         <div
             style={{
@@ -16,9 +17,10 @@ function ChatMessages({ messages }: Props) {
                 flex: 1
             }}
         >
+
             {messages.map((m) => {
 
-                const isTeacher = m.username === "TEACHER"
+                const isTeacher = m.senderRole === "TEACHER"
 
                 return (
                     <div
@@ -29,6 +31,7 @@ function ChatMessages({ messages }: Props) {
                             alignItems: isTeacher ? "flex-start" : "flex-end"
                         }}
                     >
+
                         <div
                             style={{
                                 fontSize: "12px",
@@ -38,7 +41,7 @@ function ChatMessages({ messages }: Props) {
                                 fontFamily: "Sora"
                             }}
                         >
-                            {m.username}
+                            {m.senderName}
                         </div>
 
                         <div
@@ -60,6 +63,7 @@ function ChatMessages({ messages }: Props) {
                     </div>
                 )
             })}
+
         </div>
     )
 }

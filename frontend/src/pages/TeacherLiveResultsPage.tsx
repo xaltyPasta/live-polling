@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 import PageContainer from "../components/layout/PageContainer"
 import PollCard from "../components/poll/PollCard"
@@ -10,8 +11,8 @@ import { useSocket } from "../hooks/socket"
 
 import type { Poll, PollOption } from "../types/poll.types"
 import type { Participant } from "../types/session.types"
+
 import SpinnerWidget from "../components/common/SpinnerWidget"
-import { useNavigate } from "react-router-dom"
 
 interface PollEndResult {
   optionId: string
@@ -55,7 +56,7 @@ function TeacherLiveResultsPage() {
 
     if (payload?.results) {
 
-      setPoll((prev) => {
+      setPoll(prev => {
 
         if (!prev) return prev
 
@@ -169,15 +170,12 @@ function TeacherLiveResultsPage() {
               borderRadius: "28px",
               border: "none",
               cursor: "pointer",
-
               background:
                 "linear-gradient(99.18deg,#8F64E1 -46.89%,#1D68BD 223.45%)",
-
               fontFamily: "Sora",
               fontWeight: 600,
               fontSize: "14px",
               color: "#FFFFFF",
-
               display: "flex",
               alignItems: "center",
               gap: "8px"
@@ -186,10 +184,10 @@ function TeacherLiveResultsPage() {
             👁 View Poll history
           </button>
         </div>
+
         <PageContainer maxWidth={620}>
           <SpinnerWidget />
-          <div className="common-text-style"
-          >
+          <div className="common-text-style">
             Waiting for poll data...
           </div>
         </PageContainer>
@@ -207,6 +205,7 @@ function TeacherLiveResultsPage() {
         justifyContent: "center"
       }}
     >
+
       <div
         style={{
           position: "absolute",
@@ -222,15 +221,12 @@ function TeacherLiveResultsPage() {
             borderRadius: "28px",
             border: "none",
             cursor: "pointer",
-
             background:
               "linear-gradient(99.18deg,#8F64E1 -46.89%,#1D68BD 223.45%)",
-
             fontFamily: "Sora",
             fontWeight: 600,
             fontSize: "14px",
             color: "#FFFFFF",
-
             display: "flex",
             alignItems: "center",
             gap: "8px"
@@ -286,27 +282,20 @@ function TeacherLiveResultsPage() {
                     position: "absolute",
                     right: "0",
                     bottom: "-80px",
-
                     width: "260px",
                     height: "57.58px",
-
                     borderRadius: "34px",
                     border: "none",
                     cursor: "pointer",
-
                     background:
                       "linear-gradient(99.18deg,#8F64E1 -46.89%,#1D68BD 223.45%)",
-
                     fontFamily: "Sora",
                     fontWeight: 600,
                     fontSize: "18px",
                     color: "#FFFFFF",
-
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-
-                    transition: "all 0.2s ease"
+                    justifyContent: "center"
                   }}
                 >
                   + Ask a new question
@@ -319,11 +308,15 @@ function TeacherLiveResultsPage() {
 
         </div>
 
-        <ChatButton onClick={() => setChatOpen(!chatOpen)} />
+        <ChatButton onClick={() => setChatOpen(prev => !prev)} />
 
         <FloatingChatPanel
           open={chatOpen}
           participants={participants}
+          pollId={poll.id}
+          senderName="Teacher"
+          senderRole="TEACHER"
+          showKick
           onKick={kickStudent}
         />
 

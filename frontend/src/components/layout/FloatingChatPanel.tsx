@@ -1,49 +1,48 @@
 import { useState, useEffect } from "react"
-import { useSocket } from "../../hooks/socket"
 
 import ChatMessages from "../chat/ChatMessages"
 import ChatInput from "../chat/ChatInput"
 import ParticipantList from "../participants/ParticipantList"
 
-import type { ChatMessage } from "../../types/chat.types"
+import { useChat } from "../../context/chatContext"
+
 import type { Participant } from "../../types/session.types"
 
 interface Props {
     open: boolean
-    participants: Participant[] | []
+    participants: Participant[]
+    pollId: string
+    senderName: string
+    senderRole: "TEACHER" | "STUDENT"
+    showKick?: boolean
     onKick?: (id: string) => void
 }
 
-function FloatingChatPanel({ open, participants, onKick }: Props) {
-
-    const socket = useSocket()
+function FloatingChatPanel({
+    open,
+    participants,
+    pollId,
+    senderName,
+    senderRole,
+    showKick = false,
+    onKick
+}: Props) {
 
     const [tab, setTab] = useState<"chat" | "participants">("chat")
-    const [messages, setMessages] = useState<ChatMessage[]>([])
+
+    const { messages, sendMessage } = useChat()
 
     useEffect(() => {
 
-        if (!socket) return
+        if (!pollId || !open) return
 
-        const handleNew = (msg: ChatMessage) => {
-            setMessages((prev) => [...prev, msg])
-        }
+    }, [pollId, open])
 
-        socket.on("chat:new", handleNew)
+    const handleSend = (message: string) => {
 
-        return () => {
-            socket.off("chat:new", handleNew)
-        }
+        if (!message.trim()) return
 
-    }, [socket])
-
-    const sendMessage = (message: string) => {
-
-        socket?.emit("chat:send", {
-            senderName: "Teacher",
-            senderRole: "TEACHER",
-            message
-        })
+        sendMessage(senderName, senderRole, message, pollId)
 
     }
 
@@ -112,23 +111,49 @@ function FloatingChatPanel({ open, participants, onKick }: Props) {
                 }}
             />
 
+            {/* Chat Tab */}
+
             {tab === "chat" && (
-                <>
-                    <ChatMessages messages={messages} />
-                    <ChatInput onSend={sendMessage} />
-                </>
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        height: "100%",
+                        overflow: "hidden"
+                    }}
+                >
+
+                    <div
+                        style={{
+                            flex: 1,
+                            overflowY: "auto"
+                        }}
+                    >
+                        <ChatMessages messages={messages} />
+                    </div>
+
+                    <ChatInput onSend={handleSend} />
+
+                </div>
+
             )}
 
+            {/* Participants Tab */}
+
             {tab === "participants" && (
+
                 <ParticipantList
                     participants={participants}
-                    onKick={onKick}
+                    onKick={showKick ? onKick : undefined}
                 />
+
             )}
 
         </div>
 
     )
+
 }
 
 export default FloatingChatPanel

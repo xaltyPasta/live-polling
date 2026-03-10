@@ -6,7 +6,7 @@ export class ChatService {
         senderName: string,
         senderRole: "TEACHER" | "STUDENT",
         message: string,
-        pollId?: string
+        pollId: string
     ) {
 
         return prisma.message.create({
@@ -20,13 +20,15 @@ export class ChatService {
 
     }
 
-    static async getRecentMessages(pollId?: string) {
+    static async getRecentMessages(pollId: string) {
 
-        return prisma.message.findMany({
+        const messages = await prisma.message.findMany({
             where: { pollId },
-            orderBy: { createdAt: "asc" },
+            orderBy: { createdAt: "desc" },
             take: 50
         })
+
+        return messages.reverse()
 
     }
 
