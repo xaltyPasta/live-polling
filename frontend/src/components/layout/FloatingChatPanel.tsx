@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 import ChatMessages from "../chat/ChatMessages"
 import ChatInput from "../chat/ChatInput"
@@ -30,11 +30,18 @@ function FloatingChatPanel({
 
     const [tab, setTab] = useState<"chat" | "participants">("chat")
 
-    const { messages, sendMessage } = useChat()
+    const { messages, sendMessage, requestHistory } = useChat()
+
+    // ✅ Track previous pollId to avoid redundant history fetches
+    const lastPollIdRef = useRef<string | null>(null)
 
     useEffect(() => {
 
         if (!pollId || !open) return
+        if (lastPollIdRef.current === pollId) return
+
+        lastPollIdRef.current = pollId
+        requestHistory(pollId)
 
     }, [pollId, open])
 
@@ -67,8 +74,6 @@ function FloatingChatPanel({
                 zIndex: 1500
             }}
         >
-
-            {/* Tabs */}
 
             <div
                 style={{
@@ -111,8 +116,6 @@ function FloatingChatPanel({
                 }}
             />
 
-            {/* Chat Tab */}
-
             {tab === "chat" && (
 
                 <div
@@ -138,8 +141,6 @@ function FloatingChatPanel({
                 </div>
 
             )}
-
-            {/* Participants Tab */}
 
             {tab === "participants" && (
 

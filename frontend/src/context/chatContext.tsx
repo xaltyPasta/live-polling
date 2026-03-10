@@ -10,6 +10,7 @@ interface ChatContextType {
         message: string,
         pollId: string
     ) => void
+    requestHistory: (pollId: string) => void
 }
 
 const ChatContext = createContext<ChatContextType | null>(null)
@@ -17,7 +18,6 @@ const ChatContext = createContext<ChatContextType | null>(null)
 export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     const socket = useSocket()
-
     const [messages, setMessages] = useState<ChatMessage[]>([])
 
     useEffect(() => {
@@ -46,13 +46,20 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         socket.on("chat:new", handleNew)
 
         return () => {
-
             socket.off("chat:history", handleHistory)
             socket.off("chat:new", handleNew)
-
         }
 
     }, [socket])
+
+    const requestHistory = (pollId: string) => {
+
+        if (!socket) return
+
+        // ✅ Fixed event name: was "chat:get_history", matches backend listener
+        socket.emit("chat:get_history", { pollId })
+
+    }
 
     const sendMessage = (
         senderName: string,
@@ -73,7 +80,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <ChatContext.Provider value={{ messages, sendMessage }}>
+        <ChatContext.Provider value={{ messages, sendMessage, requestHistory }}>
             {children}
         </ChatContext.Provider>
     )

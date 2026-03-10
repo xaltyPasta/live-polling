@@ -18,7 +18,7 @@ export class ChatController {
 
         return {
             id: msg.id,
-            username: msg.senderName,
+            senderName: msg.senderName,
             senderRole: msg.senderRole,
             message: msg.message,
             createdAt: msg.createdAt

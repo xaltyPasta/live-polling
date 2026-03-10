@@ -44,6 +44,11 @@ export function registerPollSocket(io: Server) {
 
                 const state = await PollController.getPollState(sessionId)
 
+                // ✅ Join the poll's room so chat messages are received
+                if (state.poll?.id) {
+                    socket.join(state.poll.id)
+                }
+
                 const participants =
                     await SessionController.getActiveParticipants()
 
@@ -82,6 +87,9 @@ export function registerPollSocket(io: Server) {
                     options,
                     duration
                 )
+
+                // ✅ Teacher joins the poll's room so they receive chat messages
+                socket.join(poll.id)
 
                 const results =
                     await PollController.getPollResults(poll.id)
@@ -188,22 +196,44 @@ export function registerPollSocket(io: Server) {
 
         socket.on("chat:send", async (payload) => {
 
-            const message = await ChatController.sendMessage(
-                payload.senderName,
-                payload.senderRole,
-                payload.message,
-                payload.pollId
-            )
+            try {
 
-            io.to(payload.pollId).emit("chat:new", message)
+                const message = await ChatController.sendMessage(
+                    payload.senderName,
+                    payload.senderRole,
+                    payload.message,
+                    payload.pollId
+                )
+
+                // ✅ Broadcast to everyone in the poll room
+                io.to(payload.pollId).emit("chat:new", message)
+
+            } catch {
+
+                socket.emit("error", {
+                    message: "Failed to send message"
+                })
+
+            }
 
         })
 
-        socket.on("chat:history", async ({ pollId }) => {
+        // ✅ Fixed event name: chat:get_history (was "chat:history")
+        socket.on("chat:get_history", async ({ pollId }) => {
 
-            const messages = await ChatController.getRecentMessages(pollId)
+            try {
 
-            socket.emit("chat:history", messages)
+                const messages = await ChatController.getRecentMessages(pollId)
+
+                socket.emit("chat:history", messages)
+
+            } catch {
+
+                socket.emit("error", {
+                    message: "Failed to fetch chat history"
+                })
+
+            }
 
         })
 
